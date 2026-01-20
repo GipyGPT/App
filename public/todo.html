@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aufgaben</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/app.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#000000">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- iPhone/PWA nicer -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#070c16" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <style>
+    :root {
+      --bg0: #05080f;
+      --bg1: #070c16;
+      --panel: rgba(17, 24, 39, 0.72);
+      --panel2: rgba(20, 28, 46, 0.78);
+      --border: rgba(255,255,255,0.10);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.62);
+      --accent: #3ee38c;
+      --accent2: #2fce7a;
+      --shadow: 0 18px 60px rgba(0,0,0,0.55);
+      --radius: 18px;
+      --danger: #ff4d6d;
+      --warn: #ffd369;
+    }
+
+    /* Base */
+    html, body{
+      height: auto;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      color-scheme: dark;
+    }
+    body{
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(62,227,140,0.10), transparent 55%),
+                  radial-gradient(900px 600px at 85% 20%, rgba(79,140,255,0.08), transparent 55%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1));
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 28px);
+      box-sizing: border-box;
+    }
+
+    /* safe-area dark bar */
+    body::before{
+      content:"";
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: env(safe-area-inset-top);
+      background: #070c16;
+      z-index: 999999;
+      pointer-events:none;
+    }
+
+    .container{
+      background: var(--panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 26px 26px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    h1{ margin:0; font-size: 2rem; letter-spacing: .2px; }
+    h2{ margin: 18px 0 10px; font-size: 1.45rem; letter-spacing: .2px; }
+
+    /* Buttons / Links */
+    .btn{
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: #03130a;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 4px;
+      transition: transform 0.15s ease, filter 0.2s ease;
+      box-shadow: 0 10px 24px rgba(62,227,140,0.14);
+      user-select: none;
+    }
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: translateY(1px); }
+    .btn-small{ padding: 6px 12px; font-size: .85rem; margin:0; }
+    .btn-secondary{
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .btn-secondary:hover{ filter: brightness(1.06); }
+
+    .back-link{
+      display:inline-block;
+      padding: 12px 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 14px;
+      text-decoration:none;
+      user-select:none;
+      white-space: nowrap;
+    }
+
+    .toolbar{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap:12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .toolbar .left, .toolbar .right{ display:flex; align-items:center; gap:8px; flex-wrap: wrap; }
+
+    /* Inputs */
+    input[type="text"], input[type="time"]{
+      padding: 12px 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      border-radius: 14px;
+      font-size: 16px; /* no mobile zoom */
+      outline: none;
+      min-width: 220px;
+      box-sizing: border-box;
+    }
+    input[type="text"]::placeholder{ color: rgba(235,244,255,0.55); }
+
+    ul{ list-style:none; padding:0; margin:0; }
+
+    /* List items */
+    .task-item{
+      display:flex;
+      align-items:center;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      gap:12px;
+      -webkit-user-select:none;
+      user-select:none;
+      flex-wrap: wrap;
+    }
+    .task-item.task-done{
+      background: rgba(62,227,140,0.16) !important;
+      border-color: rgba(62,227,140,0.65) !important;
+      box-shadow: 0 0 0 3px rgba(62,227,140,0.10);
+    }
+
+    .task-check{
+      width: 22px;
+      height: 22px;
+      accent-color: var(--accent);
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+
+    .task-main{
+      flex: 1 1 320px;
+      min-width: 220px;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .task-title{
+      font-weight: 900;
+      font-size: 1.05rem;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .task-meta{
+      display:flex;
+      gap:8px;
+      flex-wrap: wrap;
+      color: rgba(255,255,255,0.82);
+      font-weight: 800;
+      font-size: 0.86rem;
+    }
+    .tag{
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .tag.warn{
+      border-color: rgba(255,211,105,0.24);
+      background: rgba(255,211,105,0.10);
+      color: rgba(255,255,255,0.92);
+    }
+
+    .actions{
+      display:flex;
+      gap:6px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .hidden{ display:none; }
+
+    .progress-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(62,227,140,0.25);
+      background: rgba(62,227,140,0.10);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(62,227,140,0.08);
+    }
+    .progress-dot{
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 16px rgba(62,227,140,0.65);
+    }
+    .progress-bar{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      overflow:hidden;
+      margin: 12px 0 10px;
+    }
+    .progress-bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), rgba(62,227,140,0.35));
+      border-radius: 999px;
+      transition: width 220ms ease;
+    }
+
+    .add-row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .days{
+      display:flex;
+      gap:8px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .day-chip{
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.88);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-weight: 900;
+      cursor:pointer;
+      user-select:none;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      font-size: 0.9rem;
+    }
+    .day-chip.on{
+      border-color: rgba(62,227,140,0.35);
+      background: rgba(62,227,140,0.16);
+    }
+    .day-chip input{ display:none; }
+
+    /* Modal / Popup overlay */
+    .popup-overlay{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 1000;
+      overscroll-behavior: contain;
+    }
+    .popup-overlay.active{ display:flex; }
+
+    /* Scroll lock when modal open (background must NOT scroll) */
+    body.modal-open{ overflow:hidden; }
+    html.modal-open{ overflow:hidden; }
+
+    .popup{
+      position: relative;
+      background: rgba(15, 20, 34, 0.92);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 20px 22px;
+      border-radius: 16px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+      min-width: 300px;
+      max-width: min(720px, 92vw);
+      max-height: 86vh;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .popup-close{
+      position:absolute;
+      top:10px;
+      right:12px;
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.85);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      user-select:none;
+    }
+    .popup-close:hover{ filter: brightness(1.08); }
+
+    .popup p{ margin:0 0 10px; color: var(--text); font-weight: 900; }
+    .popup input[type="text"], .popup input[type="time"]{
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      box-sizing: border-box;
+      font-size: 16px;
+      min-width: 0;
+    }
+    .popup-buttons{ text-align:right; display:flex; justify-content:flex-end; gap:8px; flex-wrap: wrap; }
+
+    /* Switch */
+    .switch{ position:relative; display:inline-block; width:52px; height:30px; flex:0 0 auto; }
+    .switch input{ opacity:0; width:0; height:0; }
+    .slider-round{
+      position:absolute; cursor:pointer; inset:0;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      transition: .2s;
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.18);
+    }
+    .slider-round:before{
+      position:absolute; content:"";
+      height:22px; width:22px;
+      left:4px; top:50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.92);
+      transition: .2s;
+      border-radius: 999px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+    .switch input:checked + .slider-round{
+      background: rgba(62,227,140,0.22);
+      border-color: rgba(62,227,140,0.55);
+    }
+    .switch input:checked + .slider-round:before{
+      transform: translate(22px, -50%);
+    }
+
+    @media (max-width: 520px){
+      input[type="text"], input[type="time"]{ min-width: 0; width: 100%; }
+      .add-row{ gap:10px; }
+      .actions{ margin-left: 0; }
+      .task-title{ font-size: 1.15rem; }
+    }
+  
+    /* Create bar like sketch */
+    .create-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px;
+    }
+    .create-title{
+      flex: 1 1 420px;
+      min-width: 240px;
+    }
+    .create-buttons{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap: wrap;
+    }
+    .create-buttons .btn{ margin:0; }
+    .pill-row{
+      display:flex;
+      gap:8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .modal-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin: 0 0 12px;
+    }
+    .modal-title{
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin:0;
+    }
+    .people-list{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      margin: 10px 0 6px;
+    }
+    .person-chip{
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-weight: 900;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    .person-chip.on{
+      border-color: rgba(62,227,140,0.35);
+      background: rgba(62,227,140,0.16);
+    }
+    .person-chip .x{
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,77,109,0.12);
+      color: rgba(255,255,255,0.92);
+      font-weight: 900;
+      line-height: 1;
+    }
+    .time-mode{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .mode-btn{
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.88);
+      font-weight: 900;
+      cursor:pointer;
+      user-select:none;
+    }
+    .mode-btn.on{
+      border-color: rgba(62,227,140,0.35);
+      background: rgba(62,227,140,0.16);
+    }
+    .time-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      align-items:center;
+    }
+    .time-grid .label{
+      font-weight: 900;
+      color: rgba(255,255,255,0.82);
+    }
+
+    @media (max-width: 640px){
+      .create-wrap{ gap:10px; }
+      .create-buttons{ width: 100%; justify-content: space-between; }
+      .create-title{ flex: 1 1 100%; min-width: 0; }
+      .create-buttons .btn{ flex: 1 1 auto; }
+    }
+
+  
+    /* Person-Modal Header: Plus darf nicht mit X überlappen */
+    #person-modal .popup{ position: relative; }
+    #person-modal .modal-header{ padding-right: 54px; }
+    #person-modal #person-add{
+      margin-left: auto;
+      margin-right: 10px;
+      min-width: 44px;
+      height: 38px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    #person-modal .popup-close{ top: 12px; right: 12px; }
+
+  
+    /* größere Checkboxen */
+    .task-cb{
+      width:36px;
+      height:36px;
+      transform:scale(1.3);
+      cursor:pointer;
+      accent-color: var(--accent);
+    }
+</style>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <h1>Aufgaben</h1>
+        <div class="sync-pill" id="sync-pill" title="Cloud Sync">
+          <span class="progress-dot" id="sync-dot" style="width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,0.35);box-shadow:0 0 12px rgba(255,255,255,0.12);"></span>
+          <span id="sync-text" style="color:rgba(255,255,255,0.80);font-weight:900;font-size:12px;">Lade…</span>
+        </div>
+      </div>
+      <a class="back-link" id="top-home-link" href="/home" aria-label="Home">🏠</a>
+    </div>
+
+    <div class="toolbar">
+      <div class="left">
+        <h2 style="margin:0;">Aufgaben</h2>
+        <button id="edit-mode-toggle" class="btn btn-small btn-secondary">Bearbeiten</button>
+      </div>
+      <div class="right">
+        <button id="open-settings-btn" class="btn btn-small btn-secondary">⚙️ Einstellungen</button>
+      </div>
+    </div>
+
+    <div class="progress-bar"><div id="completion-bar"></div></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom: 10px;">
+      <div class="progress-pill">
+        <span class="progress-dot"></span>
+        <span id="completion-percentage">0/0 erledigt</span>
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="check-all-btn" class="btn btn-small btn-secondary">Alle abhaken</button>
+        <button id="clear-all-btn" class="btn btn-small btn-secondary" style="border-color: rgba(255,77,109,0.25); background: rgba(255,77,109,0.10);">Alles löschen</button>
+      </div>
+    </div>
+
+    <!-- Add -->
+    <div id="new-task-section" style="margin-top:10px;">
+      <div class="create-wrap">
+        <input type="text" id="new-task-title" class="create-title" placeholder="Objekt (z.B. saugen)" />
+        <div class="create-buttons">
+          <button id="open-days" class="btn btn-small btn-secondary" type="button">Tage</button>
+          <button id="open-time" class="btn btn-small btn-secondary" type="button">Zeit</button>
+          <button id="open-person" class="btn btn-small btn-secondary" type="button">Benutzer</button>
+          <button id="add-task-btn" class="btn btn-small" type="button">Erstellen</button>
+        </div>
+      </div>
+
+      
+    </div>
+
+    <ul id="tasks-list" style="margin-top: 14px;"></ul>
+  </div>
+
+  <!-- Einstellungen -->
+  <div id="settings-modal" class="popup-overlay">
+    <div class="popup">
+      <button class="popup-close" type="button" id="settings-x" aria-label="Schließen">✕</button>
+
+      <h3 style="margin:0 0 12px;">Einstellungen</h3>
+
+      
+      <div style="display:flex; flex-direction:column; gap:14px;">
+
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="font-weight:900;">Push</div>
+          <label class="switch" aria-label="Push">
+            <input id="push-receive-toggle" type="checkbox">
+            <span class="slider-round"></span>
+          </label>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="font-weight:900;">Unten</div>
+          <label class="switch" aria-label="Fertige nach unten">
+            <input id="done-bottom-toggle" type="checkbox">
+            <span class="slider-round"></span>
+          </label>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div style="font-weight:900;">Kästchen</div>
+          <label class="switch" aria-label="Abhaken mit Kästchen">
+            <input id="checkbox-toggle" type="checkbox">
+            <span class="slider-round"></span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button id="settings-close" class="btn btn-small btn-secondary" type="button">Schließen</button>
+        <button id="settings-save" class="btn btn-small" type="button">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Tage -->
+  <div id="days-modal" class="popup-overlay">
+    <div class="popup">
+      <button class="popup-close" type="button" id="days-x" aria-label="Schließen">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">Tage</h3>
+      </div>
+      <div class="days" id="days-picker"></div>
+      <div class="popup-buttons" style="margin-top:14px;">
+        <button id="days-cancel" class="btn btn-small btn-secondary" type="button">Abbrechen</button>
+        <button id="days-ok" class="btn btn-small" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zeit -->
+  <div id="time-modal" class="popup-overlay">
+    <div class="popup">
+      <button class="popup-close" type="button" id="time-x" aria-label="Schließen">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">Zeit</h3>
+      </div>
+
+      <div class="time-mode">
+        <button class="mode-btn" id="mode-at" type="button">Um</button>
+        <button class="mode-btn" id="mode-range" type="button">Von/Bis</button>
+        <button class="mode-btn" id="mode-none" type="button">Keine Zeit</button>
+      </div>
+
+      <div id="time-at-wrap">
+        <div class="time-grid">
+          <div class="label">Um</div>
+          <input type="time" id="time-at" />
+        </div>
+      </div>
+
+      <div id="time-range-wrap" class="hidden">
+        <div class="time-grid">
+          <div class="label">Von</div>
+          <input type="time" id="time-from" />
+          <div class="label">Bis</div>
+          <input type="time" id="time-to" />
+        </div>
+      </div>
+
+      <div class="popup-buttons" style="margin-top:14px;">
+        <button id="time-cancel" class="btn btn-small btn-secondary" type="button">Abbrechen</button>
+        <button id="time-ok" class="btn btn-small" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Benutzer -->
+  <div id="person-modal" class="popup-overlay">
+    <div class="popup">
+      <button class="popup-close" type="button" id="person-x" aria-label="Schließen">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">Benutzer</h3>
+        <button id="person-add" class="btn btn-small btn-secondary" type="button">+</button>
+      </div>
+
+      <div class="people-list" id="people-list"></div>
+
+      <div class="popup-buttons" style="margin-top:14px;">
+        <button id="person-cancel" class="btn btn-small btn-secondary" type="button">Abbrechen</button>
+        <button id="person-ok" class="btn btn-small" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup (Prompt/Confirm/Edit) -->
+  <div id="popup-overlay" class="popup-overlay">
+    <div class="popup">
+      <button class="popup-close" type="button" id="popup-x" aria-label="Schließen">✕</button>
+
+      <p id="popup-message"></p>
+
+      <input type="text" id="popup-input-title" class="hidden" placeholder="Aufgabe" />
+      <div id="popup-days" class="days hidden" style="margin: 6px 0 10px;"></div>
+      <input type="time" id="popup-input-time" class="hidden" />
+      <input type="text" id="popup-input-person" class="hidden" placeholder="Person" />
+      <input type="password" id="popup-input-pin" class="hidden" inputmode="numeric" autocomplete="one-time-code" placeholder="PIN" />
+
+      <div class="popup-buttons">
+        <button id="popup-cancel" class="btn btn-small btn-secondary">Abbrechen</button>
+        <button id="popup-confirm" class="btn btn-small">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // ===== Cloud Storage (0 localStorage for data) =====
+      // HINWEIS: Frontend erwartet im Worker diese Endpoints:
+      //   GET/PUT /api/todo/data  (auth via cookies wie bei deiner Einkaufsliste)
+      // Wenn du (noch) keinen Endpoint hast, kannst du unten "USE_LOCAL_FALLBACK" aktivieren.
+
+      const USE_LOCAL_FALLBACK = false; // <- auf true, wenn du erstmal ohne Backend testen willst
+
+      const LS_FALLBACK_KEY = "todoData_fallback_v1";
+
+      let data = { tasks: [], settings: { doneBottom:false, checkbox:false } };
+      let editMode = false;
+
+      // Draft (Create)
+      let draft = { title:"", days:[], timeMode:"none", time:"", from:"", to:"", person:"" };
+
+      // ===== Notifications / Reminders =====
+      // Hinweis: Browser-Notifications brauchen einmalig eine Erlaubnis.
+      // In vielen Browsern funktionieren geplante Notifications nur, solange die App offen ist.
+      const REMIND_CHECK_MS = 25 * 1000; // polling while app is open
+      let remindTimer = null;
+
+	  function isPushEnabled(){
+	    return localStorage.getItem("todo_push_receive") === "1";
+	  }
+
+      async function ensureNotifyPermission(){
+        if (!("Notification" in window)) return false;
+        if (Notification.permission === "granted") return true;
+        if (Notification.permission === "denied") return false;
+        try{
+          const p = await Notification.requestPermission();
+          return p === "granted";
+        }catch(e){
+          return false;
+        }
+      }
+
+      async function showNotify(title, body, tag){
+        const ok = await ensureNotifyPermission();
+        if (!ok) return false;
+
+        try{
+          // Prefer Service Worker notification if available (PWA nicer)
+          if ("serviceWorker" in navigator){
+            const reg = await navigator.serviceWorker.getRegistration();
+            if (reg && reg.showNotification){
+              const t = tag || "todo";
+
+              // Avoid duplicates: close existing notifications with the same tag
+              try{
+                if (typeof reg.getNotifications === "function"){
+                  const existing = await reg.getNotifications({ tag: t });
+                  (existing || []).forEach(n => { try{ n.close(); }catch(e){} });
+                }
+              }catch(e){}
+
+              await reg.showNotification(title, {
+                body: body || "",
+                tag: t,
+                renotify: true
+              });
+              return true;
+            }
+          }
+        }catch(e){ /* fallback below */ }
+
+        try{
+          new Notification(title, { body: body || "", tag: tag || "todo" });
+          return true;
+        }catch(e){
+          return false;
+        }
+      }
+
+
+      // ===== Cloudflare Web Push (send to your phone PWA) =====
+      // Set your VAPID PUBLIC key (Worker generates the matching private key)
+      let VAPID_PUBLIC_KEY = "";
+      let pushReady = false;
+
+      async function fetchVapidPublicKey(){
+        try{
+          const r = await fetch("/api/push/publicKey", { credentials: "include" });
+          const j = await r.json().catch(()=>null);
+          if (r.ok && j && j.ok === true && typeof j.publicKey === "string" && j.publicKey.trim()){
+            VAPID_PUBLIC_KEY = j.publicKey.trim();
+            return VAPID_PUBLIC_KEY;
+          }
+        }catch(e){}
+        return "";
+      }
+
+      function urlBase64ToUint8Array(base64String){
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        let base64 = base64String + padding;
+        base64 = base64.replace(/-/g, "+").replace(/_/g, "/");
+        const rawData = atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+        return outputArray;
+      }
+
+      async function ensureServiceWorker(){
+        if (!("serviceWorker" in navigator)) return null;
+        try{
+          const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+          await navigator.serviceWorker.ready;
+          return reg;
+        }catch(e){
+          return null;
+        }
+      }
+
+      async function ensurePushSubscribed(deviceId){
+        // Ensure stable deviceId so the server can de-duplicate subscriptions
+        if (!deviceId) deviceId = getOrCreateDeviceId();
+        if (!("serviceWorker" in navigator) || !("PushManager" in window)) throw new Error("push_not_supported");
+        if (!VAPID_PUBLIC_KEY){
+          await fetchVapidPublicKey();
+        }
+        if (!VAPID_PUBLIC_KEY) throw new Error("missing_vapid_public_key");
+
+        const permOk = await ensureNotifyPermission();
+        if (!permOk) throw new Error("notify_denied");
+
+        const reg = await ensureServiceWorker();
+        if (!reg) throw new Error("sw_failed");
+
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub){
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+        }
+
+        // Register subscription on Cloudflare (this is the "only my phone" target)
+        const r = await fetch("/api/push/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ subscription: sub, deviceId: String(deviceId||""), enabled: true })
+        });
+        const j = await r.json().catch(()=>null);
+        if (!r.ok || !j || j.ok !== true) throw new Error(j?.error || "register_failed");
+
+        pushReady = true;
+        return true;
+      }
+
+      async function pushToPhone(message){
+        // Sends a push to THE subscription stored for your account/device.
+        try{
+          const deviceId = getOrCreateDeviceId();
+          if (!pushReady) await ensurePushSubscribed(deviceId);
+          const r = await fetch("/api/push/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ body: String(message || ""), deviceId: String(deviceId||"") })
+          });
+          const j = await r.json().catch(()=>null);
+          return !!(r.ok && j && j.ok === true);
+        }catch(e){
+          return false;
+        }
+      }
+
+      function getOrCreateDeviceId(){
+        try{
+          const k = "todo_push_device_id";
+          let id = localStorage.getItem(k);
+          if (id && typeof id === "string" && id.length >= 8) return id;
+          // random but stable for this browser profile
+          id = "dev_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
+          localStorage.setItem(k, id);
+          return id;
+        }catch{
+          return "dev_" + Math.random().toString(16).slice(2);
+        }
+      }
+
+      async function setServerPushEnabled(deviceId, enabled){
+        try{
+          const r = await fetch("/api/push/setEnabled", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ deviceId, enabled: !!enabled })
+          });
+          const j = await r.json().catch(()=>null);
+          return !!(r.ok && j && j.ok === true);
+        }catch{
+          return false;
+        }
+      }
+
+      function bindPushToggle(){
+        const cb = document.getElementById("push-receive-toggle");
+        if (!cb) return;
+
+        if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)){
+          cb.disabled = true;
+          cb.checked = false;
+          return;
+        }
+
+        // load saved preference
+        try{
+          cb.checked = localStorage.getItem("todo_push_receive") === "1";
+        }catch{}
+
+        cb.addEventListener("change", async ()=>{
+          const want = !!cb.checked;
+          try{ localStorage.setItem("todo_push_receive", want ? "1" : "0"); }catch{}
+
+          const deviceId = getOrCreateDeviceId();
+
+          if (want){
+            cb.disabled = true;
+            try{
+              await ensurePushSubscribed(deviceId); // registers + enables
+              await setServerPushEnabled(deviceId, true);
+              showNotify("Benachrichtigungen", "Benachrichtigungen sind aktiv.", "push_on");
+            }catch(e){
+              cb.checked = false;
+              try{ localStorage.setItem("todo_push_receive", "0"); }catch{}
+              const msg = (e && e.message) ? String(e.message) : "";
+              showNotify("Aufgaben", "Hinweis\nPush konnte nicht aktiviert werden." + (msg? " ("+msg+")":"") , "push_fail");
+            }finally{
+              cb.disabled = false;
+            }
+          }else{
+            // disable on server (so broadcast won't include this device)
+            await setServerPushEnabled(deviceId, false);
+          }
+        });
+      }
+
+
+
+            function pad2(n){ return String(n).padStart(2,"0"); }
+      function fmtDateTime(ms){
+        const d = new Date(ms);
+        return pad2(d.getDate()) + "." + pad2(d.getMonth()+1) + "." + d.getFullYear() + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+      }
+
+      function parseTaskNextDueMs(task){
+        // Finds the next datetime in the future matching task.days + time.
+        // If no valid time -> returns null.
+        const days = Array.isArray(task.days) ? task.days : [];
+        if (!days.length) return null;
+
+        const mode = task.timeMode || "at";
+        let t = "";
+        if (mode === "range") t = normalizeTime(task.from || task.time || "");
+        else if (mode === "at") t = normalizeTime(task.time || "");
+        else t = "";
+
+        if (!t) return null;
+        const [hh, mm] = t.split(":").map(x=>parseInt(x,10));
+        if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
+
+        const now = new Date();
+        // map our keys to JS getDay(): 0=So..6=Sa
+        const map = { so:0, mo:1, di:2, mi:3, do:4, fr:5, sa:6 };
+        const wanted = days.map(k=>map[k]).filter(x=>Number.isFinite(x));
+        if (!wanted.length) return null;
+
+        for (let i=0;i<14;i++){
+          const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i, hh, mm, 0, 0);
+          if (d.getTime() <= now.getTime()) continue;
+          if (wanted.includes(d.getDay())) return d.getTime();
+        }
+        return null;
+      }
+
+      function ensureRemindShape(task){
+        if (!task) return;
+        if (typeof task.remindAt !== "number") task.remindAt = 0; // ms timestamp
+        if (typeof task.remindEnabled !== "boolean") task.remindEnabled = false;
+        if (typeof task.remindLastFired !== "number") task.remindLastFired = 0;
+      }
+
+      function armReminderLoop(){
+        if (remindTimer) clearInterval(remindTimer);
+        remindTimer = setInterval(checkDueReminders, REMIND_CHECK_MS);
+      }
+
+      async function checkDueReminders(){
+        const now = Date.now();
+        let changed = false;
+
+        (data.tasks || []).forEach(task=>{
+          ensureRemindShape(task);
+          if (!task.remindEnabled) return;
+          if (task.done) return;
+
+          if (task.remindAt && task.remindAt <= now){
+            // fire once
+            if (now - (task.remindLastFired || 0) < 5000) return; // safety
+            task.remindLastFired = now;
+            task.remindEnabled = false;
+            changed = true;
+
+            const whenTxt = task.time ? (task.time) : "";
+            showNotify("Erinnerung", (task.title || "Aufgabe"), "todo_rem_" + task.id);
+          }
+        });
+
+        if (changed) scheduleSave();
+      }
+
+      function setTaskReminder(task, whenMs){
+        ensureRemindShape(task);
+        task.remindAt = Math.max(0, Number(whenMs) || 0);
+        task.remindEnabled = !!task.remindAt;
+        scheduleSave();
+      }
+
+      function clearTaskReminder(task){
+        ensureRemindShape(task);
+        task.remindAt = 0;
+        task.remindEnabled = false;
+        scheduleSave();
+      }
+	  
+		async function remindTask(task){
+		  if (!task) return;
+		  const msg = String(task.title || "Aufgabe");
+
+		  if (isPushEnabled()){
+			await pushToPhone(msg);
+		  } else {
+			await showNotify("Erinnerung", msg, "todo_rem_" + task.id);
+		  }
+		}
+
+      async function notifyTaskCreated(task){
+          if (!task) return;
+          const msg = String(task.title || "Aufgabe");
+          const ok = await pushToPhone(msg);
+          if (!ok){
+            // Fallback: lokale Notification
+            await showNotify("Erinnerung", msg, "todo_created_" + task.id);
+          }
+      }
+
+
+      // sync UI
+      const syncDot = document.getElementById("sync-dot");
+      const syncText = document.getElementById("sync-text");
+      function setSync(state, text){
+        // state: ok | bad | work
+        if (!syncDot) return;
+        syncDot.style.background = state === "ok" ? "rgba(62,227,140,0.9)"
+                           : state === "bad" ? "rgba(255,77,109,0.9)"
+                           : "rgba(255,255,255,0.75)";
+        syncDot.style.boxShadow = state === "ok" ? "0 0 14px rgba(62,227,140,0.55)"
+                           : state === "bad" ? "0 0 14px rgba(255,77,109,0.55)"
+                           : "0 0 14px rgba(255,255,255,0.35)";
+        if (syncText) syncText.textContent = text;
+      }
+
+      function redirectToLogin(){
+        const rt = location.pathname + location.search + location.hash;
+        location.href = "/login?returnTo=" + encodeURIComponent(rt);
+      }
+
+      async function apiGet(){
+        if (USE_LOCAL_FALLBACK){
+          try{
+            const raw = localStorage.getItem(LS_FALLBACK_KEY);
+            return raw ? JSON.parse(raw) : { tasks: [], settings: { doneBottom:false, checkbox:false } };
+          }catch(e){
+            return { tasks: [], settings: { doneBottom:false, checkbox:false } };
+          }
+        }
+
+        const r = await fetch("/api/todo/data", { credentials: "include" });
+        if (r.status === 401) redirectToLogin();
+        const j = await r.json().catch(()=>null);
+        if (!j || j.ok !== true) throw new Error(j?.error || "load_failed");
+        return j.data || { tasks: [], settings: { doneBottom:false, checkbox:false } };
+      }
+
+      async function apiPut(obj){
+        if (USE_LOCAL_FALLBACK){
+          localStorage.setItem(LS_FALLBACK_KEY, JSON.stringify(obj));
+          return;
+        }
+
+        const r = await fetch("/api/todo/data", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(obj)
+        });
+        if (r.status === 401) redirectToLogin();
+        const j = await r.json().catch(()=>null);
+        if (!r.ok || !j || j.ok !== true) throw new Error(j?.error || "save_failed");
+      }
+
+      let saveTimer = null;
+      let saving = false;
+      let saveQueued = false;
+
+      function scheduleSave(){
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(()=> saveNow().catch(()=>{}), 250);
+        setSync("work", "Speichere…");
+      }
+
+      async function saveNow(){
+        if (saving){
+          saveQueued = true;
+          return;
+        }
+        saving = true;
+        try{
+          await apiPut(data);
+          setSync("ok", "Gespeichert");
+        }catch(e){
+          setSync("bad", "Fehler");
+          console.error(e);
+        }finally{
+          saving = false;
+          if (saveQueued){
+            saveQueued = false;
+            scheduleSave();
+          }
+        }
+      }
+
+      function makeId(prefix){
+        return (prefix||"id") + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+      }
+
+      function ensureSettings(){
+        if (!data.settings || typeof data.settings !== "object") data.settings = {};
+        if (typeof data.settings.doneBottom !== "boolean") data.settings.doneBottom = false;
+        if (typeof data.settings.checkbox !== "boolean") data.settings.checkbox = false;
+        
+        if (!Array.isArray(data.settings.users)) {
+          // Migration: alte "people" -> users (PIN wird beim ersten Verwenden gesetzt)
+          const old = Array.isArray(data.settings.people) ? data.settings.people : [];
+          data.settings.users = (old.length ? old : ["Mama","Papa"]).map(n=>({ name: String(n), salt: "", pinHash: "" }));
+        }
+        if (typeof data.settings.activeUser !== "string") data.settings.activeUser = "";
+
+        // normalize: falls users noch Strings sind
+        data.settings.users = (data.settings.users || []).map(u=>{
+          if (typeof u === "string") return { name: u, salt:"", pinHash:"" };
+          return { name: String(u.name||""), salt: String(u.salt||""), pinHash: String(u.pinHash||"") };
+        }).filter(u=>u.name);
+if (!Array.isArray(data.settings.people)) data.settings.people = ["Mama","Papa"];
+      }
+
+      // ===== Popup =====
+      const overlay = document.getElementById("popup-overlay");
+      const popupMessage = document.getElementById("popup-message");
+      const popupTitle = document.getElementById("popup-input-title");
+      const popupTime = document.getElementById("popup-input-time");
+      const popupPerson = document.getElementById("popup-input-person");
+      const popupDaysWrap = document.getElementById("popup-days");
+      let popupCallback = null;
+
+      document.getElementById("popup-confirm").addEventListener("click", ()=> popupCallback && popupCallback(true));
+      document.getElementById("popup-cancel").addEventListener("click", ()=> popupCallback && popupCallback(false));
+      document.getElementById("popup-x").addEventListener("click", ()=> popupCallback && popupCallback(false));
+
+      function openOverlay(){
+        overlay.classList.add("active");
+        document.body.classList.add("modal-open");
+        document.documentElement.classList.add("modal-open");
+      }
+      function closeOverlay(){
+        overlay.classList.remove("active");
+        document.body.classList.remove("modal-open");
+        document.documentElement.classList.remove("modal-open");
+      }
+
+      function showConfirm(msg, onOk){
+        popupMessage.textContent = msg;
+
+        popupTitle.classList.add("hidden");
+        popupTime.classList.add("hidden");
+        popupPerson.classList.add("hidden");
+        popupDaysWrap.classList.add("hidden");
+
+        openOverlay();
+        popupCallback = (ok)=>{
+          closeOverlay();
+          if (ok) onOk();
+          popupCallback = null;
+        };
+      }
+
+      function buildDays(container, selected){
+        const days = [
+          { key:"mo", label:"Mo" },
+          { key:"di", label:"Di" },
+          { key:"mi", label:"Mi" },
+          { key:"do", label:"Do" },
+          { key:"fr", label:"Fr" },
+          { key:"sa", label:"Sa" },
+          { key:"so", label:"So" }
+        ];
+
+        container.innerHTML = "";
+        days.forEach(d=>{
+          const lab = document.createElement("label");
+          lab.className = "day-chip" + (selected.includes(d.key) ? " on" : "");
+          lab.innerHTML = `<input type="checkbox" data-day="${d.key}" ${selected.includes(d.key) ? "checked" : ""} /><span>${d.label}</span>`;
+          lab.addEventListener("click", ()=>{
+            const inp = lab.querySelector("input");
+            setTimeout(()=> lab.classList.toggle("on", inp.checked), 0);
+          });
+          container.appendChild(lab);
+        });
+      }
+
+      function readDays(container){
+        return Array.from(container.querySelectorAll('input[type="checkbox"]'))
+          .filter(x=>x.checked)
+          .map(x=>x.dataset.day)
+          .filter(Boolean);
+      }
+
+      // ===== Draft UI + Modals =====
+      const draftPreview = document.getElementById("draft-preview");
+
+      function updateDraftUI(){
+        // buttons label
+        const bDays = document.getElementById("open-days");
+        const bTime = document.getElementById("open-time");
+        const bPerson = document.getElementById("open-person");
+
+        const dayText = (draft.days && draft.days.length) ? fmtDays(draft.days) : "📅";
+        bDays.textContent = dayText || "📅";
+
+        let timeText = "⏰";
+        if (draft.timeMode === "none") timeText = "⏰✕";
+        if (draft.timeMode === "at" && normalizeTime(draft.time)) timeText = normalizeTime(draft.time);
+        if (draft.timeMode === "range" && normalizeTime(draft.from) && normalizeTime(draft.to)) timeText = normalizeTime(draft.from) + "–" + normalizeTime(draft.to);
+        bTime.textContent = timeText;
+
+        bPerson.textContent = draft.person ? draft.person : "👤";
+
+        // preview pills
+        if (!draftPreview) return;
+        const pills = [];
+        if (draft.days && draft.days.length) pills.push(`<span class="tag">${escapeHtml(fmtDays(draft.days))}</span>`);
+        if (draft.timeMode === "range" && draft.from && draft.to) pills.push(`<span class="tag">${escapeHtml(draft.from)}–${escapeHtml(draft.to)}</span>`);
+        else if (draft.timeMode === "at" && draft.time) pills.push(`<span class="tag">${escapeHtml(normalizeTime(draft.time))}</span>`);
+        // kein "ohne"-Tag mehr anzeigen
+        if (draft.person) pills.push(`<span class="tag">${escapeHtml(draft.person)}</span>`);
+        draftPreview.innerHTML = pills.join("");
+      }
+
+      // --- Days modal
+      const daysModal = document.getElementById("days-modal");
+      const daysPicker = document.getElementById("days-picker");
+      function openDays(){
+        buildDays(daysPicker, draft.days || []);
+        daysModal.classList.add("active");
+        document.body.classList.add("modal-open");
+        document.documentElement.classList.add("modal-open");
+      }
+      function closeDays(){
+        daysModal.classList.remove("active");
+        document.body.classList.remove("modal-open");
+        document.documentElement.classList.remove("modal-open");
+      }
+
+      // --- Time modal
+      const timeModal = document.getElementById("time-modal");
+      const modeAtBtn = document.getElementById("mode-at");
+      const modeRangeBtn = document.getElementById("mode-range");
+      const modeNoneBtn = document.getElementById("mode-none");
+      const timeAtWrap = document.getElementById("time-at-wrap");
+      const timeRangeWrap = document.getElementById("time-range-wrap");
+      const timeAt = document.getElementById("time-at");
+      const timeFrom = document.getElementById("time-from");
+      const timeTo = document.getElementById("time-to");
+
+      function setTimeMode(mode){
+        draft.timeMode = mode;
+        modeAtBtn.classList.toggle("on", mode === "at");
+        modeRangeBtn.classList.toggle("on", mode === "range");
+        modeNoneBtn.classList.toggle("on", mode === "none");
+        timeAtWrap.classList.toggle("hidden", mode !== "at");
+        timeRangeWrap.classList.toggle("hidden", mode !== "range");
+      }
+
+      function openTime(){
+        // init fields
+        timeAt.value = normalizeTime(draft.time) || "13:00";
+        timeFrom.value = normalizeTime(draft.from) || "09:00";
+        timeTo.value = normalizeTime(draft.to) || "10:00";
+        setTimeMode(draft.timeMode || "at");
+
+        timeModal.classList.add("active");
+        document.body.classList.add("modal-open");
+        document.documentElement.classList.add("modal-open");
+      }
+      function closeTime(){
+        timeModal.classList.remove("active");
+        document.body.classList.remove("modal-open");
+        document.documentElement.classList.remove("modal-open");
+      }
+
+      // --- Person modal
+      const personModal = document.getElementById("person-modal");
+      const peopleListEl = document.getElementById("people-list");
+
+      function openPerson(){
+        ensureSettings();
+        const users = data.settings.users || [];
+
+        if (!users.length){
+          promptText("Ersten Benutzer anlegen:", "z.B. Mama", (name)=>{
+            const n = name.trim();
+            if (!n) return;
+
+            const u = { name: n, salt: "", pinHash: "" };
+            data.settings.users = [u];
+            scheduleSave();
+
+            promptPin(`PIN festlegen für "${n}"`, (pin1)=>{
+              promptPin("PIN wiederholen", async (pin2)=>{
+                if (pin1 !== pin2){
+                  setSync("bad","PIN falsch");
+                  return;
+                }
+                const salt = randomSalt();
+                const hash = await sha256Hex(salt + ":" + pin1);
+                u.salt = salt;
+                u.pinHash = hash;
+                draft.person = n;
+                data.settings.activeUser = n;
+                scheduleSave();
+                personModal.classList.add("active");
+                document.body.classList.add("modal-open");
+                document.documentElement.classList.add("modal-open");
+                renderPeopleList();
+                updateDraftUI();
+              });
+            });
+          });
+          return;
+        }
+
+        renderPeopleList();
+        personModal.classList.add("active");
+        document.body.classList.add("modal-open");
+        document.documentElement.classList.add("modal-open");
+      }
+      function closePerson(){
+        personModal.classList.remove("active");
+        document.body.classList.remove("modal-open");
+        document.documentElement.classList.remove("modal-open");
+      }
+
+      function renderPeopleList(){
+        ensureSettings();
+        const users = data.settings.users || [];
+        peopleListEl.innerHTML = "";
+
+        users.forEach(u=>{
+          const name = String(u.name || "").trim();
+          if (!name) return;
+
+          const chip = document.createElement("div");
+          chip.className = "person-chip" + (draft.person === name ? " on" : "");
+          chip.innerHTML = `<span>${escapeHtml(name)}</span><span class="x" title="Entfernen">✕</span>`;
+
+          chip.addEventListener("click", async (e)=>{
+            const isX = (e.target && e.target.classList && e.target.classList.contains("x"));
+            if (isX){
+              e.stopPropagation();
+              showConfirm(`Benutzer "${name}" löschen?`, ()=>{
+                data.settings.users = (data.settings.users || []).filter(x=>String(x.name) !== name);
+                if (draft.person === name) draft.person = "";
+                if (data.settings.activeUser === name) data.settings.activeUser = "";
+                scheduleSave();
+                renderPeopleList();
+                updateDraftUI();
+              });
+              return;
+            }
+
+            const user = (data.settings.users || []).find(x=>String(x.name) === name);
+            if (!user) return;
+
+            // bereits ausgewählt -> abwählen
+            if (draft.person === name){
+              draft.person = "";
+              data.settings.activeUser = "";
+              scheduleSave();
+              renderPeopleList();
+              updateDraftUI();
+              return;
+            }
+
+            // kein PIN gesetzt -> jetzt festlegen
+            if (!user.pinHash || !user.salt){
+              promptPin(`PIN festlegen für "${name}"`, (pin1)=>{
+                promptPin("PIN wiederholen", async (pin2)=>{
+                  if (pin1 !== pin2){
+                    setSync("bad","PIN falsch");
+                    return;
+                  }
+                  const salt = randomSalt();
+                  const hash = await sha256Hex(salt + ":" + pin1);
+                  user.salt = salt;
+                  user.pinHash = hash;
+                  draft.person = name;
+                  data.settings.activeUser = name;
+                  scheduleSave();
+                  renderPeopleList();
+                  updateDraftUI();
+                });
+              });
+              return;
+            }
+
+            // PIN abfragen
+            promptPin(`PIN für "${name}"`, async (pin)=>{
+              const hash = await sha256Hex(user.salt + ":" + pin);
+              if (hash !== user.pinHash){
+                setSync("bad","PIN falsch");
+                return;
+              }
+              draft.person = name;
+              data.settings.activeUser = name;
+              scheduleSave();
+              renderPeopleList();
+              updateDraftUI();
+            });
+          });
+
+          peopleListEl.appendChild(chip);
+        });
+      }
+
+      async function sha256Hex(str){
+        const enc = new TextEncoder();
+        const buf = await crypto.subtle.digest("SHA-256", enc.encode(str));
+        const arr = Array.from(new Uint8Array(buf));
+        return arr.map(b=>b.toString(16).padStart(2,"0")).join("");
+      }
+      function randomSalt(){
+        const a = new Uint8Array(16);
+        crypto.getRandomValues(a);
+        return Array.from(a).map(b=>b.toString(16).padStart(2,"0")).join("");
+      }
+
+      function promptPin(msg, onOk){
+        popupMessage.textContent = msg;
+        popupTitle.classList.add("hidden");
+        popupTime.classList.add("hidden");
+        popupPerson.classList.add("hidden");
+        popupDaysWrap.classList.add("hidden");
+
+        const popupPin = document.getElementById("popup-input-pin");
+        popupPin.classList.remove("hidden");
+        popupPin.value = "";
+        popupPin.placeholder = "PIN (z.B. 1234)";
+
+        const popupNoTimeBtn = document.getElementById("popup-no-time-btn");
+        if (popupNoTimeBtn) popupNoTimeBtn.classList.add("hidden");
+
+        openOverlay();
+        popupCallback = (ok)=>{
+          if (!ok){
+            popupPin.classList.add("hidden");
+            closeOverlay();
+            popupCallback=null;
+            return;
+          }
+          const v = (popupPin.value || "").trim();
+          if (!v) return;
+          if (!/^\d{4,10}$/.test(v)) return;
+          popupPin.classList.add("hidden");
+          closeOverlay();
+          popupCallback=null;
+          onOk(v);
+        };
+      }
+
+function promptText(msg, placeholder, onOk){
+        popupMessage.textContent = msg;
+        popupTitle.classList.remove("hidden");
+        popupTime.classList.add("hidden");
+        popupPerson.classList.add("hidden");
+        popupDaysWrap.classList.add("hidden");
+        const popupNoTimeBtn = document.getElementById("popup-no-time-btn");
+        if (popupNoTimeBtn) popupNoTimeBtn.classList.add("hidden");
+
+        popupTitle.value = "";
+        popupTitle.placeholder = placeholder || "";
+
+        openOverlay();
+        popupCallback = (ok)=>{
+          if (!ok){ closeOverlay(); popupCallback=null; return; }
+          const v = (popupTitle.value || "").trim();
+          if (!v) return;
+          closeOverlay();
+          popupCallback=null;
+          onOk(v);
+        };
+      }
+
+      function showTaskEditor(task, onOk){
+        popupMessage.textContent = "Aufgabe bearbeiten:";
+
+        popupTitle.classList.remove("hidden");
+        popupTime.classList.remove("hidden");
+        popupPerson.classList.remove("hidden");
+        popupDaysWrap.classList.remove("hidden");
+
+        popupTitle.value = task.title || "";
+        popupTime.value = task.time || "13:00";
+        popupPerson.value = task.person || "";
+
+        buildDays(popupDaysWrap, (task.days || []));
+
+        openOverlay();
+        popupCallback = (ok)=>{
+          if (!ok){
+            closeOverlay();
+            popupCallback = null;
+            return;
+          }
+          const title = (popupTitle.value || "").trim();
+          const time = normalizeTime(popupTime.value);
+          const person = (popupPerson.value || "").trim();
+          const days = readDays(popupDaysWrap);
+
+          if (!title) return; // stay open
+          if (!time) return;  // stay open
+          if (!days.length) return;
+
+          closeOverlay();
+          popupCallback = null;
+          onOk({ title, time, person, days });
+        };
+      }
+
+      // ===== Helpers =====
+      const DAY_ORDER = ["mo","di","mi","do","fr","sa","so"];
+      const DAY_LABEL = { mo:"Mo", di:"Di", mi:"Mi", do:"Do", fr:"Fr", sa:"Sa", so:"So" };
+
+      function normalizeTime(s){
+        if(!s) return "";
+        s = String(s).toLowerCase().replace("uhr","").trim();
+        s = s.replace(".", ":");
+        if (/^\d{1,2}$/.test(s)) s = s.padStart(2,"0")+":00";
+        if (!/^\d{1,2}:\d{2}$/.test(s)) return "";
+        const [h,m] = s.split(":").map(x=>parseInt(x,10));
+        if (!Number.isFinite(h) || !Number.isFinite(m) || h<0 || h>23 || m<0 || m>59) return "";
+        return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+      }
+
+      function parseDays(s){
+        if(!s) return [];
+        s = String(s).toLowerCase();
+        const parts = s.split(/[,/ ]+/).map(x=>x.trim()).filter(Boolean);
+        const out = [];
+        for (const p of parts){
+          const key = p.slice(0,2);
+          if (DAY_LABEL[key] && !out.includes(key)) out.push(key);
+        }
+        out.sort((a,b)=> DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
+        return out;
+      }
+
+      function escapeHtml(s){
+        return String(s ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
+
+      function fmtDays(days){
+        const d = (days || []).slice().sort((a,b)=>DAY_ORDER.indexOf(a)-DAY_ORDER.indexOf(b));
+        return d.map(x=>DAY_LABEL[x] || x).join(", ");
+      }
+
+      function isDone(t){ return !!t.done; }
+
+      function updateCompletion(){
+        const total = (data.tasks||[]).length;
+        const done = (data.tasks||[]).filter(isDone).length;
+
+        const label = document.getElementById("completion-percentage");
+        const bar = document.getElementById("completion-bar");
+
+        label.textContent = done + "/" + total + " erledigt";
+        const pct = total ? (done/total)*100 : 0;
+        bar.style.width = Math.max(0, Math.min(100, pct)).toFixed(2) + "%";
+      }
+
+      function ensureDataShape(){
+        if (!data || typeof data !== "object") data = { tasks: [], settings: { doneBottom:false, checkbox:false } };
+        if (!Array.isArray(data.tasks)) data.tasks = [];
+        ensureSettings();
+
+        // migrate minimal
+        data.tasks = data.tasks.map(t=>{
+          if (!t || typeof t !== "object") t = {};
+          if (!t.id) t.id = makeId("task");
+          if (typeof t.title !== "string") t.title = String(t.title ?? "");
+          if (!Array.isArray(t.days)) t.days = [];
+          t.days = t.days.map(x=>String(x).toLowerCase().slice(0,2)).filter(x=>DAY_LABEL[x]);
+          t.days = Array.from(new Set(t.days)).sort((a,b)=>DAY_ORDER.indexOf(a)-DAY_ORDER.indexOf(b));
+          t.time = normalizeTime(t.time) || "13:00";
+          if (typeof t.person !== "string") t.person = String(t.person ?? "");
+          t.done = !!t.done;
+          if (t.done && !t.doneAt) t.doneAt = new Date().toISOString();
+          if (!t.done) t.doneAt = null;
+          ensureRemindShape(t);
+          return t;
+        });
+      }
+
+      // auto-delete completed tasks after 1 day
+      function cleanupDoneTasks(){
+        const now = Date.now();
+        const dayMs = 24 * 60 * 60 * 1000;
+        const beforeLen = (data.tasks||[]).length;
+        data.tasks = (data.tasks||[]).filter(t=>{
+          if (!t || !t.done) return true;
+          if (!t.doneAt) return true;
+          const ts = Date.parse(t.doneAt);
+          if (!isFinite(ts)) return true;
+          return (now - ts) < dayMs;
+        });
+        return (data.tasks||[]).length !== beforeLen;
+      }
+
+
+      // ===== Render =====
+      function render(){
+        ensureDataShape();
+        if (cleanupDoneTasks()) scheduleSave();
+
+        const doneBottom = !!data.settings.doneBottom;
+        const checkboxMode = !!data.settings.checkbox;
+
+        const tasks = (data.tasks || []).slice();
+        if (doneBottom){
+          tasks.sort((a,b)=>(isDone(a)?1:0)-(isDone(b)?1:0));
+        }
+
+        updateCompletion();
+
+        const ul = document.getElementById("tasks-list");
+        ul.innerHTML = "";
+
+        tasks.forEach(task=>{
+          const li = document.createElement("li");
+          li.className = "task-item" + (isDone(task) ? " task-done" : "");
+
+          // left side
+          const left = document.createElement("div");
+          left.style.display = "flex";
+          left.style.flexDirection = "column";
+          left.style.gap = "2px";
+          left.style.flex = "1 1 auto";
+
+          const titleEl = document.createElement("div");
+          titleEl.style.fontWeight = "900";
+          titleEl.textContent = task.title || "To-Do";
+          left.appendChild(titleEl);
+
+          const meta = document.createElement("div");
+          meta.style.opacity = "0.75";
+          meta.style.fontSize = "0.85rem";
+          const dayStr = (task.days||[]).map(d=>DAY_LABEL[d]||d).join(", ");
+          let timeStr = "";
+          if (task.timeMode === "at" && task.time) timeStr = " • " + task.time;
+          if (task.timeMode === "range" && (task.from || task.to)) timeStr = " • " + (task.from||"?") + "–" + (task.to||"?");
+          const personStr = task.person ? (" • " + task.person) : "";
+          meta.textContent = (dayStr || "") + timeStr + personStr;
+          left.appendChild(meta);
+
+          // right side actions
+          const actions = document.createElement("div");
+          actions.style.display = "flex";
+          actions.style.gap = "8px";
+          actions.style.alignItems = "center";
+          actions.style.flex = "0 0 auto";
+
+          // checkbox mode: show checkbox only if enabled
+          let cb = null;
+          if (checkboxMode){
+            cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.className = "task-cb";
+            cb.checked = !!task.done;
+            cb.addEventListener("click",(e)=> e.stopPropagation());
+            cb.addEventListener("change", ()=>{
+              task.done = cb.checked;
+              task.doneAt = task.done ? new Date().toISOString() : null;
+              if (task.done) clearTaskReminder(task);
+              scheduleSave();
+              render();
+            });
+            actions.appendChild(cb);
+          } else {
+            li.addEventListener("click", ()=>{
+              task.done = !task.done;
+              task.doneAt = task.done ? new Date().toISOString() : null;
+              if (task.done) clearTaskReminder(task);
+              scheduleSave();
+              render();
+            });
+          }
+
+          const remindBtn = document.createElement("button");
+          remindBtn.className = "btn btn-small btn-secondary";
+          remindBtn.type = "button";
+          remindBtn.textContent = "Erinnern";
+          remindBtn.addEventListener("click", async (e)=>{
+            e.stopPropagation();
+            await remindTask(task);
+          });
+          actions.appendChild(remindBtn);
+
+          if (editMode){
+            const del = document.createElement("button");
+            del.className = "btn btn-small";
+            del.type = "button";
+            del.textContent = "✖";
+            del.style.borderColor = "rgba(255,77,109,0.35)";
+            del.style.background = "rgba(255,77,109,0.10)";
+            del.addEventListener("click",(e)=>{
+              e.stopPropagation();
+              data.tasks = (data.tasks||[]).filter(t=>t.id !== task.id);
+              scheduleSave();
+              render();
+            });
+            actions.appendChild(del);
+          }
+
+          li.appendChild(left);
+          li.appendChild(actions);
+
+          ul.appendChild(li);
+        });
+      }
+
+      // ===== Create task =====
+      function createTaskFromDraft(){
+        const title = (draft.title || "").trim();
+        const days = Array.isArray(draft.days) ? draft.days.slice() : [];
+
+        const person = (draft.person || "").trim();
+        const timeMode = draft.timeMode || "none";
+        const time = normalizeTime(draft.time || "");
+        const from = normalizeTime(draft.from || "");
+        const to = normalizeTime(draft.to || "");
+
+        // Pflicht: Titel
+        if (!title) return;
+
+        // mindestens Zeit ODER Person
+        const hasTime = (timeMode === "at" && !!time) || (timeMode === "range" && !!from && !!to);
+        if (!hasTime && !person) return;
+
+        const newTask = {
+          id: makeId("task"),
+          title,
+          days,
+          timeMode: hasTime ? timeMode : "none",
+          time: (timeMode === "at") ? time : "",
+          from: (timeMode === "range") ? from : "",
+          to: (timeMode === "range") ? to : "",
+          person,
+          done: false,
+          doneAt: null,
+          createdAt: new Date().toISOString()
+        };
+
+        data.tasks.unshift(newTask);
+        notifyTaskCreated(newTask);
+
+
+        // reset draft minimal
+        draft.title = "";
+        draft.days = [];
+        draft.timeMode = "none";
+        draft.time = "";
+        draft.from = "";
+        draft.to = "";
+        draft.person = "";
+
+        document.getElementById("new-task-title").value = "";
+        updateDraftUI();
+        scheduleSave();
+        render();
+      }
+
+            // ===== Settings =====
+      const settingsModal = document.getElementById("settings-modal");
+      const doneBottomToggle = document.getElementById("done-bottom-toggle");
+      const checkboxToggle = document.getElementById("checkbox-toggle");
+
+      function openSettings(){
+        ensureSettings();
+        doneBottomToggle.checked = !!data.settings.doneBottom;
+        checkboxToggle.checked = !!data.settings.checkbox;
+        settingsModal.classList.add("active");
+        document.body.classList.add("modal-open");
+        document.documentElement.classList.add("modal-open");
+      }
+      function closeSettings(){
+        settingsModal.classList.remove("active");
+        document.body.classList.remove("modal-open");
+        document.documentElement.classList.remove("modal-open");
+      }
+
+      // ===== Bind UI =====
+      function bindUI(){
+        bindPushToggle();
+        // Create (Objekt + Picker)
+        document.getElementById("add-task-btn").addEventListener("click", createTaskFromDraft);
+
+        document.getElementById("new-task-title").addEventListener("keydown", (e)=>{
+          if (e.key === "Enter") createTaskFromDraft();
+        });
+
+        document.getElementById("new-task-title").addEventListener("input", (e)=>{
+          draft.title = e.target.value || "";
+        });
+
+        // Open modals
+        document.getElementById("open-days").addEventListener("click", openDays);
+        document.getElementById("open-time").addEventListener("click", openTime);
+        document.getElementById("open-person").addEventListener("click", openPerson);
+
+        // Days modal
+        document.getElementById("days-x").addEventListener("click", closeDays);
+        document.getElementById("days-cancel").addEventListener("click", closeDays);
+        document.getElementById("days-ok").addEventListener("click", ()=>{
+          draft.days = readDays(daysPicker);
+          closeDays();
+          updateDraftUI();
+        });
+        daysModal.addEventListener("click", (e)=>{ if (e.target === daysModal) closeDays(); });
+
+        // Time modal
+        document.getElementById("time-x").addEventListener("click", closeTime);
+        document.getElementById("time-cancel").addEventListener("click", closeTime);
+        modeAtBtn.addEventListener("click", ()=> setTimeMode("at"));
+        modeRangeBtn.addEventListener("click", ()=> setTimeMode("range"));
+        modeNoneBtn.addEventListener("click", ()=> setTimeMode("none"));
+        document.getElementById("time-ok").addEventListener("click", ()=>{
+          const mode = draft.timeMode || "at";
+          if (mode === "at"){
+            draft.time = normalizeTime(timeAt.value) || "";
+            draft.from = ""; draft.to = "";
+          } else if (mode === "range"){
+            draft.from = normalizeTime(timeFrom.value) || "";
+            draft.to = normalizeTime(timeTo.value) || "";
+            draft.time = "";
+          } else {
+            draft.time = ""; draft.from = ""; draft.to = "";
+          }
+          closeTime();
+          updateDraftUI();
+        });
+        timeModal.addEventListener("click", (e)=>{ if (e.target === timeModal) closeTime(); });
+
+        // Person modal
+        document.getElementById("person-x").addEventListener("click", closePerson);
+        document.getElementById("person-cancel").addEventListener("click", closePerson);
+        document.getElementById("person-ok").addEventListener("click", ()=>{
+          closePerson();
+          updateDraftUI();
+          scheduleSave();
+        });
+        document.getElementById("person-add").addEventListener("click", ()=>{
+          promptText("Neuen Benutzer hinzufügen:", "z.B. Mama", (name)=>{
+            ensureSettings();
+            const n = name.trim();
+            if (!n) return;
+            if ((data.settings.users || []).some(u=>String(u.name)===n)) return;
+
+            const u = { name: n, salt: "", pinHash: "" };
+            data.settings.users = [u, ...(data.settings.users || [])];
+            scheduleSave();
+
+            promptPin(`PIN festlegen für "${n}"`, (pin1)=>{
+              promptPin("PIN wiederholen", async (pin2)=>{
+                if (pin1 !== pin2){ setSync("bad","PIN falsch"); return; }
+                const salt = randomSalt();
+                const hash = await sha256Hex(salt + ":" + pin1);
+                u.salt = salt;
+                u.pinHash = hash;
+                draft.person = n;
+                data.settings.activeUser = n;
+                scheduleSave();
+                renderPeopleList();
+                updateDraftUI();
+              });
+            });
+          });
+        });
+        personModal.addEventListener("click", (e)=>{ if (e.target === personModal) closePerson(); });
+
+        // initial UI
+        updateDraftUI();
+
+document.getElementById("edit-mode-toggle").addEventListener("click", function(){
+          editMode = !editMode;
+          this.textContent = editMode ? "Fertig" : "Bearbeiten";
+          render();
+        });
+
+        document.getElementById("check-all-btn").addEventListener("click", ()=>{
+          const total = (data.tasks||[]).length;
+          if (!total) return;
+          const allDone = data.tasks.every(t=>!!t.done);
+          showConfirm(allDone ? "Alles wieder abwählen?" : "Alles abhaken?", ()=>{
+            data.tasks.forEach(t=> t.done = !allDone);
+            scheduleSave();
+            render();
+          });
+        });
+
+        document.getElementById("clear-all-btn").addEventListener("click", ()=>{
+          showConfirm("Wirklich ALLES löschen?", ()=>{
+            data.tasks = [];
+            scheduleSave();
+            render();
+          });
+        });
+
+        // settings modal
+        document.getElementById("open-settings-btn").addEventListener("click", openSettings);
+        document.getElementById("settings-x").addEventListener("click", closeSettings);
+        document.getElementById("settings-close").addEventListener("click", closeSettings);
+
+        document.getElementById("settings-save").addEventListener("click", ()=>{
+          ensureSettings();
+          data.settings.doneBottom = !!doneBottomToggle.checked;
+          data.settings.checkbox = !!checkboxToggle.checked;
+          scheduleSave();
+          render();
+          closeSettings();
+        });
+
+        settingsModal.addEventListener("click", (e)=>{
+          if (e.target === settingsModal) closeSettings();
+        });
+
+        overlay.addEventListener("click", (e)=>{
+          if (e.target === overlay && popupCallback){
+            popupCallback(false);
+          }
+        });
+      }
+
+      async function init(){
+        try{
+          setSync("work","Lade…");
+          data = await apiGet();
+          ensureDataShape();
+          setSync("ok","Geladen");
+        }catch(e){
+          console.error(e);
+          setSync("bad","Fehler");
+          data = { tasks: [], settings: { doneBottom:false, checkbox:false } };
+        }
+
+        bindUI();
+        render();
+        armReminderLoop();
+        checkDueReminders();
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    })();
+  </script>
+</body>
+</html>

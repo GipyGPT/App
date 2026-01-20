@@ -3,6 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Packlisten verwalten</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="stylesheet" href="/app.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#000000">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     /* Dark UI (angelehnt an dein Beispiel) */
     :root {
@@ -20,7 +33,19 @@
       --radius: 18px;
     }
 
-    body {
+    
+    /* Lightmode */
+    body.lightmode {
+      --bg0: #f6f7fb;
+      --bg1: #ffffff;
+      --panel: rgba(255,255,255,0.86);
+      --panel2: rgba(255,255,255,0.92);
+      --border: rgba(0,0,0,0.10);
+      --text: rgba(10,12,18,0.92);
+      --muted: rgba(10,12,18,0.62);
+      --shadow: 0 18px 60px rgba(0,0,0,0.18);
+    }
+body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, sans-serif;
       color: var(--text);
@@ -47,7 +72,17 @@
       width: 100%;
     }
 
-    h1 {
+    
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 14px;
+    }
+    .topbar h1{ margin:0; }
+    .topbar .back-link{ margin-top:0; }
+h1 {
       color: var(--text);
       margin: 0 0 18px;
       font-size: 2rem;
@@ -491,18 +526,212 @@
     .switch input:checked + .slider-round:before{
       transform: translate(22px, -50%);
     }
+    /* Checkbox-Mode in der Item-Liste */
+    #items-list .item-check {
+      width: 22px;
+      height: 22px;
+      margin-right: 10px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    body.checkbox-mode #items-list .list-item { cursor: default; }
+    body.checkbox-mode #items-list .list-item .item-name,
+    body.checkbox-mode #items-list .list-item .qty-text { pointer-events: auto; }
 
+
+
+  
+    /* KI-Vorschläge UI */
+    .ai-add { margin-top: 12px; }
+    .ai-add textarea{
+      width: 100%;
+      resize: vertical;
+      min-height: 78px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.20);
+      color: rgba(255,255,255,0.92);
+      outline: none;
+    }
+    .ai-actions{
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .muted{ color: rgba(255,255,255,0.62); font-size: 12px; }
+
+    body.modal-open{ overflow:hidden; }
+
+    /* Modal: Scroll nur im Popup, nicht im Hintergrund */
+    .popup-overlay{ overscroll-behavior: contain; }
+    .popup{ max-height: 86vh; overflow: hidden; }
+    .ai-list{ overscroll-behavior: contain; }
+
+    /* TAIK Button (klein statt großem Textfeld) */
+    .ai-mini{ margin-top: 12px; display:flex; justify-content:flex-start; }
+    .taik-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+    .taik-btn .taik-t{ font-weight:900; letter-spacing:0.5px; }
+    .taik-btn .taik-ai{ font-weight:900; letter-spacing:0.5px; }
+    
+    .taik-btn .taik-label{ font-weight:900; letter-spacing:0.4px; display:inline-flex; gap:6px; align-items:baseline; }
+    .taik-btn .taik-t{ color: rgba(255,255,255,0.82); }
+    .taik-btn .taik-ai{ color: var(--accent); }
+    .taik-btn .taik-k{ color: #ffffff; }
+
+    .taik-btn .taik-k{ font-weight:900; letter-spacing:0.5px; }
+    .taik-btn .taik-sub{ opacity:.85; font-weight:700; }
+    /* Farbakzente (nutzt vorhandene CSS-Variablen) */
+    .taik-btn .taik-t{ color: var(--text); }
+
+    .taik-btn .taik-k{ color: #ffffff; }
+
+    /* AI Vorschläge: Name + Pinsel */
+    .ai-name-wrap{ display:flex; align-items:center; gap:8px; }
+    .ai-rename-btn{ width: 32px; height: 32px; border-radius: 12px; }
+
+    .ai-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top: 10px;
+      max-height: 52vh;
+      overflow:auto;
+      padding-right: 4px;
+    }
+    .ai-row{
+      display:flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+    }
+    .ai-main{ flex: 1; min-width: 0; }
+    .ai-name{ font-weight: 700; }
+    .ai-reason{ margin-top: 2px; }
+    .ai-ctrl{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap: nowrap;
+    }
+    .ai-qty{
+      width: 120px;
+    }
+    .ai-qty-label{
+      min-width: 22px;
+      text-align: right;
+      color: rgba(255,255,255,0.82);
+      font-variant-numeric: tabular-nums;
+    }
+    .icon-btn{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.92);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition: transform .08s ease, filter .12s ease;
+      user-select:none;
+    }
+    .icon-btn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+    .icon-btn.ok{ border-color: rgba(62,227,140,0.35); }
+    .icon-btn.no{ border-color: rgba(255,77,109,0.35); }
+
+    .ai-empty{
+      padding: 14px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.70);
+      text-align:center;
+    }
+
+  
+    /* === Responsive Layout (automatisch wie in Einkaufsliste) === */
+/* Standard = Desktop/Laptop */
+
+@media (max-width: 1024px) {
+  .container { max-width: 900px; }
+}
+
+@media (max-width: 700px) {
+  /* Gesamtfläche: besser lesbar am Handy */
+  body { padding: 18px 12px 26px; font-size: 16px; }
+
+  .container { max-width: 100%; width: 100%; padding: 16px; }
+
+  h1 { font-size: 30px; }
+  h2 { font-size: 22px; }
+
+  .btn { padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; }
+  .btn-small { padding: 10px 14px; font-size: 0.9rem; }
+
+  /* Inputs/Dropdowns dürfen nicht “zu breit” sein */
+  input[type="text"], select { min-width: 0; width: 100%; }
+
+  /* Zeilen dürfen umbrechen, damit nichts überlappt */
+  .list-item { padding: 14px 14px; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
+
+  /* Slider soll am Handy immer passen (überschreibt inline minWidth) */
+  #items-list input[type="range"] { width: 100% !important; min-width: 0 !important; }
+
+  /* Text etwas größer */
+  .list-item .item-name { font-size: 1rem; }
+  .qty-text { font-size: 0.95rem; }
+
+  /* Toolbars am Handy untereinander, damit nix abgeschnitten wird */
+  .toolbar { gap: 10px; }
+  .toolbar .left, .toolbar .right { width: 100%; justify-content: flex-start; }
+  #lists-section .toolbar .left { flex-wrap: wrap; row-gap: 8px; }
+
+  /* User-Zeile: Buttons untereinander, wenn nötig */
+  #user-section > div { row-gap: 10px; }
+}
+
+
+
+    /* FIX: Seite nicht abschneiden – Scroll erlauben */
+    html, body{
+      height: auto;
+      min-height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Falls irgendwo modal-open hängen bleibt: nur dann sperren */
+    body.modal-open{
+      overflow: hidden;
+    }
 
   </style>
 </head>
 <body>
   <div class="container">
+    <div class="topbar">
     <h1>Packlisten verwalten</h1>
+    <a id="back-home-link" class="back-link" href="/home">&#x2B05; Home</a>
+  </div>
     <div id="user-section">
       <h2>Benutzer</h2>
       <div style="display:flex; align-items:center; flex-wrap: wrap; margin-bottom: 10px;">
         <select id="user-select"></select>
         <button id="user-manage-btn" class="btn btn-small btn-secondary">Benutzer verwalten</button>
+        <button id="open-settings-btn-home" class="btn btn-small btn-secondary" type="button">⚙️ Einstellungen</button>
       </div>
     </div>
     <!-- Listen-Übersicht -->
@@ -513,6 +742,7 @@
           <button id="add-list-btn" class="btn btn-small">Neue Liste</button>
           <button id="import-new-list-btn" class="btn btn-small btn-secondary">Importieren</button>
           <button id="lists-edit-toggle" class="btn btn-small btn-secondary">Bearbeiten</button>
+          <button id="open-settings-btn-lists" class="btn btn-small btn-secondary" type="button">⚙️ Einstellungen</button>
         </div>
         <div class="right">
           <span class="hint" id="lists-edit-hint" style="display:none;">Bearbeiten aktiv</span>
@@ -560,12 +790,19 @@
           <span id="new-item-qty-label" class="qty-label">Menge: 1</span>
           <button id="add-item-btn" class="btn btn-small">Hinzufügen</button>
         </div>
-      </div>
+      
+        <!-- KI: Text → Vorschläge (TAIK) -->
+        <div class="ai-mini">
+          <button id="taik-open" class="btn btn-small btn-secondary taik-btn" type="button" title="KI fragen">
+            <span class="taik-label">Ask <span class="taik-t">t</span><span class="taik-ai">AI</span><span class="taik-k">k</span></span>
+          </button>
+        </div>
+</div>
       <!-- Liste der Artikel -->
       <ul id="items-list"></ul>
       <!-- Zurück-Button -->
     </div>
-    <a id="back-home-link" class="back-link" href="/home">&#x2B05; Home</a>
+    
   </div>
 
   <!-- Benutzer verwalten Popup -->
@@ -589,8 +826,7 @@
   <div id="assign-modal" class="popup-overlay">
     <div class="popup">
       <h3 id="assign-title" style="margin:0 0 8px;">Ausgewählte Artikel kopieren</h3>
-      <p id="assign-desc" style="margin:0 0 14px; color: var(--muted);">Die Artikel werden beim aktuellen Benutzer behalten und zusätzlich kopiert.</p>
-      <div style="display:flex; flex-direction:column; gap:10px;">
+<div style="display:flex; flex-direction:column; gap:10px;">
         <label style="color:var(--muted); font-size:0.9rem;">Ziel-Benutzer</label>
         <select id="assign-user"></select>
         <label style="color:var(--muted); font-size:0.9rem;">Ziel-Liste</label>
@@ -607,23 +843,33 @@
   <!-- Listen-Einstellungen -->
   <div id="list-settings-modal" class="popup-overlay">
     <div class="popup">
-      <h3 style="margin:0 0 8px;">Listen-Einstellungen</h3>
-      <p style="margin:0 0 14px; color: var(--muted);">Was soll passieren, wenn ein Eintrag fertig abgehakt ist?</p>
+      <h3 style="margin:0 0 12px;">Listen-Einstellungen</h3>
 
-      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:12px;">
-        <label style="display:flex; gap:10px; align-items:center;">
-          <input type="radio" name="doneBehavior" value="stay" />
-          <span>Nichts (bleibt an der Stelle)</span>
-        </label>
-        <label style="display:flex; gap:10px; align-items:center;">
-          <input type="radio" name="doneBehavior" value="bottom" />
-          <span>Fertige Einträge nach unten</span>
-        </label>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div>
+            <div style="font-weight:800; margin:0;">Fertige nach unten</div>
+          </div>
+          <label class="switch" aria-label="Fertige nach unten">
+            <input id="list-done-bottom-toggle" type="checkbox">
+            <span class="slider-round"></span>
+          </label>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div>
+            <div style="font-weight:800; margin:0;">Abhaken mit Kästchen</div>
+          </div>
+          <label class="switch" aria-label="Abhaken mit Kästchen">
+            <input id="list-checkbox-toggle" type="checkbox">
+            <span class="slider-round"></span>
+          </label>
+        </div>
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button id="list-settings-cancel" class="btn btn-small btn-secondary">Abbrechen</button>
-        <button id="list-settings-save" class="btn btn-small">Speichern</button>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button id="list-settings-cancel" class="btn btn-small btn-secondary" type="button">Schließen</button>
+        <button id="list-settings-save" class="btn btn-small" type="button">Speichern</button>
       </div>
     </div>
   </div>
@@ -678,21 +924,22 @@
       loadUsers();
     }
 
-    function applyRouteToState() {
+    
+function applyRouteToState() {
       const r = getRouteParts();
-      // user
-      if (r.userId && data?.users?.some(u => u.id === r.userId)) {
+      // user (Profile)
+      if (r.userId && (profilesMeta?.some(p => p.id === r.userId) || data?.users?.some(u => u.id === r.userId))) {
         currentUserId = r.userId;
-      } else if (!currentUserId && data?.users?.length) {
-        currentUserId = data.users[0].id;
+      } else if (!currentUserId && (profilesMeta?.length || data?.users?.length)) {
+        currentUserId = (profilesMeta?.[0]?.id) || (data?.users?.[0]?.id) || null;
         // Route korrigieren (damit URL stimmt)
-        setRoute(currentUserId, null, true);
+        if (currentUserId) setRoute(currentUserId, null, true);
       }
 
       // list
       currentListId = null;
       if (currentUserId && r.listId) {
-        const user = data.users.find(u => u.id === currentUserId);
+        const user = (data?.users || []).find(u => u.id === currentUserId);
         const exists = user?.lists?.some(l => l.id === r.listId);
         if (exists) currentListId = r.listId;
       }
@@ -740,29 +987,208 @@
       return { users: [] };
     }
     
-    function saveData() {
+    
+function saveData() {
+      // lokal immer (offline fallback)
       localStorage.setItem('packlisteData', JSON.stringify(data));
-      apiSaveData(data).catch(()=>{});
+
+      // cloud: aktuelles Profil speichern (debounced)
+      scheduleProfileSave();
     }
 
-    async function apiGetData() {
-      const r = await fetch("/api/data", { credentials: "include" });
+    
+    // ===== Cloud Profiles API (über /api/packliste/data) =====
+    // Dein Backend hat KEIN /api/profiles. Deshalb mappen wir "Profiles" (Benutzer)
+    // auf ein einziges Cloud-JSON unter /api/packliste/data.
+    // Struktur im Cloud-Doc: { users:[ {id,name,lists,updatedAt}, ... ], updatedAt }
+    const CLOUD_DATA_URL = "/api/data";
+
+    async function cloudFetchData() {
+      const r = await fetch(CLOUD_DATA_URL, { credentials: "include" });
       if (r.status === 401) return { unauth: true, data: null };
-      if (!r.ok) throw new Error("apiGetData failed: " + r.status);
+      if (!r.ok) throw new Error("cloudFetchData failed: " + r.status);
       const j = await r.json().catch(() => null);
-      return { unauth: false, data: (j && ("data" in j) ? j.data : null) };
+
+      // Akzeptiere beide Formen:
+      // 1) {users:[...]} direkt
+      // 2) {ok:true,data:{users:[...]}}
+      const d = (j && j.data && typeof j.data === "object") ? j.data : j;
+      return { unauth: false, data: d };
     }
 
-    async function apiSaveData(data) {
-      await fetch("/api/data", {
+    async function cloudSaveData(doc) {
+      const r = await fetch(CLOUD_DATA_URL, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify(doc)
       });
+      if (r.status === 401) return { unauth: true };
+      if (!r.ok) throw new Error("cloudSaveData failed: " + r.status);
+      return { unauth: false };
     }
 
-    function handleRoute() {
+    // ===== API-kompatible Wrapper (damit der Rest deines Codes nicht umgebaut werden muss) =====
+    let profilesMeta = [];          // [{id,name,updated_at}]
+    let profileData = null;         // {id,name,lists:[]}
+
+    async function apiListProfiles() {
+      const res = await cloudFetchData();
+      if (res.unauth) return { unauth: true, profiles: [] };
+
+      const users = Array.isArray(res.data?.users) ? res.data.users : [];
+      const profiles = users.map(u => ({
+        id: u.id,
+        name: u.name || "Benutzer",
+        updated_at: u.updatedAt || res.data?.updatedAt || 0
+      }));
+
+      return { unauth: false, profiles };
+    }
+
+    async function apiCreateProfile(name) {
+      const res = await cloudFetchData();
+      if (res.unauth) return { unauth: true, id: null };
+
+      const doc = (res.data && typeof res.data === "object") ? res.data : { users: [] };
+      if (!Array.isArray(doc.users)) doc.users = [];
+
+      const id = ("p_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16));
+      doc.users.unshift({ id, name: (name || "Benutzer"), lists: [], updatedAt: Date.now() });
+      doc.updatedAt = Date.now();
+
+      await cloudSaveData(doc);
+      return { unauth: false, id };
+    }
+
+    async function apiGetProfile(profileId) {
+      const res = await cloudFetchData();
+      if (res.unauth) return { unauth: true, data: null };
+
+      const users = Array.isArray(res.data?.users) ? res.data.users : [];
+      const u = users.find(x => x.id === profileId) || null;
+
+      // apiGetProfile erwartet {data:{id,name,lists}}
+      return { unauth: false, data: u ? { id: u.id, name: u.name, lists: Array.isArray(u.lists) ? u.lists : [] } : null };
+    }
+
+    async function apiSaveProfile(profileId, body) {
+      const res = await cloudFetchData();
+      if (res.unauth) return { unauth: true };
+
+      const doc = (res.data && typeof res.data === "object") ? res.data : { users: [] };
+      if (!Array.isArray(doc.users)) doc.users = [];
+
+      const idx = doc.users.findIndex(u => u.id === profileId);
+      const next = {
+        id: profileId,
+        name: (body && body.name) ? body.name : "Benutzer",
+        lists: (body && Array.isArray(body.lists)) ? body.lists : [],
+        updatedAt: Date.now()
+      };
+
+      if (idx >= 0) doc.users[idx] = next;
+      else doc.users.unshift(next);
+
+      doc.updatedAt = Date.now();
+      await cloudSaveData(doc);
+      return { unauth: false };
+    }
+
+    async function apiDeleteProfile(profileId) {
+      const res = await cloudFetchData();
+      if (res.unauth) return { unauth: true };
+
+      const doc = (res.data && typeof res.data === "object") ? res.data : { users: [] };
+      if (!Array.isArray(doc.users)) doc.users = [];
+
+      doc.users = doc.users.filter(u => u.id !== profileId);
+      doc.updatedAt = Date.now();
+
+      await cloudSaveData(doc);
+      return { unauth: false };
+    }
+
+    // Legacy (dein Code ruft das evtl. noch irgendwo auf)
+    async function apiGetData() {
+      const res = await cloudFetchData();
+      if (res.unauth) return { unauth: true, data: null };
+      return { unauth: false, data: res.data };
+    }
+
+    async function apiSaveData(doc) {
+      return await cloudSaveData(doc);
+    }
+    // ===== /Cloud Profiles API =====
+
+
+    // ===== Profiles: Laden / Wechseln / Speichern =====
+    let saveTimer = null;
+    function scheduleProfileSave() {
+      if (!currentUserId) return;
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        try {
+          const u = getCurrentUser();
+          if (!u) return;
+          // Name muss mit Meta konsistent sein
+          u.id = currentUserId;
+          if (!u.name) u.name = "Benutzer";
+          await apiSaveProfile(currentUserId, u);
+          // Meta refresh (damit Sortierung/Name passt)
+          try { profilesMeta = (await apiListProfiles()).profiles || profilesMeta; } catch (_) {}
+        } catch (_) {
+          // silent (offline)
+        }
+      }, 350);
+    }
+
+    async function refreshProfilesAndMaybeSelect() {
+      const res = await apiListProfiles();
+      if (res.unauth) return { unauth: true };
+      profilesMeta = res.profiles || [];
+
+      // Wenn noch kein Profil existiert: eins anlegen und lokale Daten seed'en
+      if (!profilesMeta.length) {
+        const local = loadData();
+        // Seed: falls alte lokale Struktur {users:[...]} existiert, nimm ersten User, sonst leer
+        const seedUser = (local && Array.isArray(local.users) && local.users[0]) ? local.users[0] : null;
+        const name = (seedUser && seedUser.name) ? String(seedUser.name) : "Standard";
+        const created = await apiCreateProfile(name);
+        if (created.unauth) return { unauth: true };
+        const id = created.id;
+        const initial = seedUser && typeof seedUser === "object"
+          ? { id, name, lists: Array.isArray(seedUser.lists) ? seedUser.lists : [] }
+          : { id, name, lists: [] };
+        await apiSaveProfile(id, initial);
+        profilesMeta = (await apiListProfiles()).profiles || [];
+      }
+
+      // aktuelle Auswahl validieren
+      if (!currentUserId || !profilesMeta.some(p => p.id === currentUserId)) {
+        currentUserId = profilesMeta[0]?.id || null;
+        currentListId = null;
+      }
+      return { unauth: false };
+    }
+
+    async function loadCurrentProfileData() {
+      if (!currentUserId) { data = { users: [] }; return; }
+      const res = await apiGetProfile(currentUserId);
+      if (res.unauth) return { unauth: true };
+      const meta = profilesMeta.find(p => p.id === currentUserId);
+      const name = meta?.name || res.data?.name || "Benutzer";
+      profileData = res.data && typeof res.data === "object"
+        ? { id: currentUserId, name, lists: Array.isArray(res.data.lists) ? res.data.lists : [] }
+        : { id: currentUserId, name, lists: [] };
+
+      // App erwartet data.users
+      data = { users: [profileData] };
+      return { unauth: false };
+    }
+    // ===== /Profiles =====
+
+function handleRoute() {
   // URL -> State
   applyRouteToState();
 
@@ -771,12 +1197,14 @@
 
   // Wenn ein User gewählt ist, Listen laden
   if (typeof currentUserId !== "undefined" && currentUserId) {
-    loadLists();
-
-    // Wenn eine Liste gewählt ist, Editor anzeigen + Items rendern
+    // Wenn eine Liste gewählt ist -> Editor anzeigen + Items rendern
     if (typeof currentListId !== "undefined" && currentListId) {
       if (typeof showListEditSection === "function") showListEditSection();
       if (typeof renderItems === "function") renderItems();
+    } else {
+      // Keine Liste gewählt -> sicher zurück in die Listenübersicht (wichtig nach "Zurück")
+      if (typeof showListsSection === "function") showListsSection();
+      else loadLists();
     }
   }
 }
@@ -803,30 +1231,18 @@ async function init() {
     return;
   }
 
-  // 2) Cloud laden (Cloud ist Master)
-  let cloud = null;
+  // 2) Cloud Profiles laden (Profile = Benutzer)
   try {
-    cloud = await apiGetData(); // { unauth, data }
+    const metaRes = await refreshProfilesAndMaybeSelect();
+    if (metaRes.unauth) { goLogin(); return; }
+    const profRes = await loadCurrentProfileData();
+    if (profRes.unauth) { goLogin(); return; }
   } catch (_) {
-    cloud = null; // API down → NICHT in die Cloud schreiben!
-  }
-
-  if (cloud && cloud.unauth) {
-    goLogin();
-    return;
-  }
-
-  if (cloud && cloud.data) {
-    data = cloud.data;
-  } else if (cloud && cloud.data === null) {
-    // Cloud erreichbar, aber noch keine Daten gespeichert → seed aus local/default
+    // Cloud nicht erreichbar → nur lokal arbeiten (offline)
     data = loadData();
     if (!data || !Array.isArray(data.users)) data = { users: [] };
-    try { await apiSaveData(data); } catch (_) {}
-  } else {
-    // Cloud nicht erreichbar → nur lokal arbeiten
-    data = loadData();
-    if (!data || !Array.isArray(data.users)) data = { users: [] };
+    currentUserId = data.users[0]?.id || null;
+    currentListId = null;
   }
 
   // 3) localStorage synchron halten
@@ -835,10 +1251,13 @@ async function init() {
   // 4) UI rendern
   // UI-Events binden (nur einmal)
   bindUI();
-  loadUsers();
+  applyTheme();
+  await loadUsers();
 }
 
 
+
+    
 function getCompletedBehavior() {
   // Werte: "none" | "bottom"
   return localStorage.getItem("packliste_completedBehavior") || "none";
@@ -849,7 +1268,30 @@ function setCompletedBehavior(v) {
 }
 
 
+
+
+
+function getTheme() {
+  return localStorage.getItem("packliste_theme") || "dark";
+}
+function setTheme(v) {
+  localStorage.setItem("packliste_theme", v === "light" ? "light" : "dark");
+  applyTheme();
+}
+function applyTheme() {
+  const v = getTheme();
+  document.body.classList.toggle("lightmode", v === "light");
+}
+
+function ensureListSettings(list) {
+  if (!list.settings || typeof list.settings !== "object") list.settings = {};
+  if (typeof list.settings.doneBottom !== "boolean") list.settings.doneBottom = false;
+  if (typeof list.settings.checkbox !== "boolean") list.settings.checkbox = false;
+  return list.settings;
+}
+
 function bindUI() {
+  const openSettingsBtn = document.getElementById('open-settings-btn'); // Listen-Settings Button
       // Benutzer verwalten (Popup)
       const userModal = document.getElementById('user-modal');
       document.getElementById('user-manage-btn').addEventListener('click', function() {
@@ -859,30 +1301,63 @@ function bindUI() {
         userModal.classList.remove('active');
       });
       document.getElementById('user-add').addEventListener('click', function() {
-        showPrompt('Name des neuen Benutzers:', '', function(name) {
+        showPrompt('Name des neuen Benutzers:', '', async function(name) {
           if (!name) return;
-          const id = Date.now().toString();
-          data.users.push({ id, name, lists: [] });
-          saveData();
-          currentUserId = id;
-          currentListId = null;
-          loadUsers();
-          userModal.classList.remove('active');
+          try {
+            // Cloud Profil anlegen
+            const created = await apiCreateProfile(name);
+            if (created.unauth) {
+              location.href = "/login?returnTo=" + encodeURIComponent(location.pathname + location.search);
+              return;
+            }
+            await refreshProfilesAndMaybeSelect();
+            currentUserId = created.id;
+            currentListId = null;
+            await loadCurrentProfileData();
+            await loadUsers();
+            userModal.classList.remove('active');
+          } catch (_) {
+            // Offline fallback: lokal
+            const id = Date.now().toString();
+            data.users.push({ id, name, lists: [] });
+            currentUserId = id;
+            currentListId = null;
+            saveData();
+            loadUsers();
+            userModal.classList.remove('active');
+          }
         });
       });
       document.getElementById('user-delete').addEventListener('click', function() {
         if (!currentUserId) return;
-        const user = data.users.find(u => u.id === currentUserId);
-        if (!user) return;
-        showConfirm(`Benutzer "${user.name}" wirklich löschen?`, function() {
-          data.users = data.users.filter(u => u.id !== currentUserId);
-          currentUserId = null;
-          currentListId = null;
-          listsEditMode = false;
-          selectedItemIds.clear();
-          saveData();
-          loadUsers();
-          userModal.classList.remove('active');
+
+        // Name aus Meta holen
+        const meta = profilesMeta?.find(p => p.id === currentUserId);
+        const displayName = meta?.name || getCurrentUser()?.name || "Benutzer";
+
+        showConfirm(`Benutzer "${displayName}" wirklich löschen?`, async function() {
+          try {
+            const del = await apiDeleteProfile(currentUserId);
+            if (del.unauth) {
+              location.href = "/login?returnTo=" + encodeURIComponent(location.pathname + location.search);
+              return;
+            }
+            await refreshProfilesAndMaybeSelect();
+            currentListId = null;
+            await loadCurrentProfileData();
+            await loadUsers();
+            userModal.classList.remove('active');
+          } catch (_) {
+            // Offline fallback: lokal löschen
+            if (data?.users) data.users = data.users.filter(u => u.id !== currentUserId);
+            currentUserId = data.users?.[0]?.id || null;
+            currentListId = null;
+            listsEditMode = false;
+            selectedItemIds.clear();
+            saveData();
+            loadUsers();
+            userModal.classList.remove('active');
+          }
         });
       });
       document.getElementById('user-export').addEventListener('click', function() {
@@ -894,13 +1369,15 @@ function bindUI() {
           userModal.classList.remove('active');
         });
       });
-      document.getElementById('user-select').addEventListener('change', function() {
+      document.getElementById('user-select').addEventListener('change', async function() {
         currentUserId = this.value || null;
         currentListId = null;
 
         // URL: /packliste/<user>
         setRoute(currentUserId, null);
 
+        // Profil laden (Cloud)
+        try { await loadCurrentProfileData(); } catch (_) {}
         loadLists();
       });
       // Event-Handler für Listen
@@ -936,38 +1413,59 @@ function bindUI() {
       });
       // Listen-Einstellungen (⚙️)
       const listSettingsModal = document.getElementById('list-settings-modal');
-      const openListSettings = () => {
+      const listDoneBottomToggle = document.getElementById('list-done-bottom-toggle');
+      const listCheckboxToggle = document.getElementById('list-checkbox-toggle');
+
+      function openListSettings() {
         const list = getCurrentList();
         if (!list) return;
-        const s = getCurrentListSettings();
-        const radios = listSettingsModal.querySelectorAll('input[name="doneBehavior"]');
-        radios.forEach(r => r.checked = (r.value === s.doneBehavior));
+        const s = ensureListSettings(list);
+        if (listDoneBottomToggle) listDoneBottomToggle.checked = !!s.doneBottom;
+        if (listCheckboxToggle) listCheckboxToggle.checked = !!s.checkbox;
         listSettingsModal.classList.add('active');
-      };
-      const settingsBtn = document.getElementById('list-settings-btn');
-      if (settingsBtn) settingsBtn.addEventListener('click', openListSettings);
+      }
 
-      document.getElementById('list-settings-cancel').addEventListener('click', () => {
-        listSettingsModal.classList.remove('active');
-      });
-      document.getElementById('list-settings-save').addEventListener('click', () => {
-        const list = getCurrentList();
-        if (!list) { listSettingsModal.classList.remove('active'); return; }
-        const chosen = listSettingsModal.querySelector('input[name="doneBehavior"]:checked')?.value || "stay";
-        if (!list.settings || typeof list.settings !== "object") list.settings = {};
-        list.settings.doneBehavior = chosen;
-        applyCompletionBehavior(list);
-        saveData();
-        renderItems();
-        listSettingsModal.classList.remove('active');
-      });
+      const openListSettingsBtn = document.getElementById("open-settings-btn");
+      if (openListSettingsBtn) {
+        openListSettingsBtn.addEventListener("click", openListSettings);
+      }
+
+      if (document.getElementById('list-settings-cancel')) {
+        document.getElementById('list-settings-cancel').addEventListener('click', () => {
+          listSettingsModal.classList.remove('active');
+        });
+      }
+
+      if (document.getElementById('list-settings-save')) {
+        document.getElementById('list-settings-save').addEventListener('click', () => {
+          const list = getCurrentList();
+          if (!list) { listSettingsModal.classList.remove('active'); return; }
+          const s = ensureListSettings(list);
+          s.doneBottom = !!(listDoneBottomToggle && listDoneBottomToggle.checked);
+          s.checkbox = !!(listCheckboxToggle && listCheckboxToggle.checked);
+          saveData();
+          renderItems();
+          listSettingsModal.classList.remove('active');
+        });
+      }
 
       // Event-Handler für Artikel hinzufügen
       document.getElementById('new-item-qty').addEventListener('input', function() {
         document.getElementById('new-item-qty-label').textContent = 'Menge: ' + this.value;
       });
       document.getElementById('add-item-btn').addEventListener('click', addItem);
-      // Bulk-Aktionen (Auswahl im Bearbeitungsmodus) – Buttons oben rechts
+
+    // TAIK Button: öffnet nur die Vorschau/KI-Box (ohne sofort zu starten)
+    const taikOpenBtn = document.getElementById('taik-open');
+    if (taikOpenBtn) taikOpenBtn.addEventListener('click', () => {
+      openAiModal();
+      setTimeout(() => document.getElementById('ai-item-text')?.focus(), 0);
+    });
+
+      
+    const aiPlanBtn = document.getElementById('ai-plan-btn');
+    if (aiPlanBtn) aiPlanBtn.addEventListener('click', aiPlanSuggestions);
+// Bulk-Aktionen (Auswahl im Bearbeitungsmodus) – Buttons oben rechts
       document.getElementById('bulk-delete').addEventListener('click', bulkDeleteSelected);
       document.getElementById('bulk-duplicate').addEventListener('click', function() { openAssignModal('duplicate'); });
       document.getElementById('bulk-share').addEventListener('click', function() { openAssignModal('share'); });
@@ -1027,21 +1525,24 @@ function bindUI() {
 
       // ⚙️ Einstellungen
       const settingsModal = document.getElementById("settings-modal");
-      const openSettingsBtn = document.getElementById("open-settings-btn");
+      const openSettingsBtnHome = document.getElementById("open-settings-btn-home");
+      const openSettingsBtnLists = document.getElementById("open-settings-btn-lists");
       const settingsCloseBtn = document.getElementById("settings-close");
-      const doneBottomToggle = document.getElementById("done-bottom-toggle");
 
       function syncSettingsUI() {
-        const v = getCompletedBehavior();
-        if (doneBottomToggle) doneBottomToggle.checked = (v === "bottom");
+        // Gerät-Buttons highlighten
+        // Theme-Switch setzen
+        const themeToggle = document.getElementById("theme-toggle");
+        if (themeToggle) themeToggle.checked = (getTheme() === "dark");
       }
 
-      if (openSettingsBtn) {
-        openSettingsBtn.addEventListener("click", () => {
-          syncSettingsUI();
-          settingsModal.classList.add("active");
-        });
+      function openSettings() {
+        syncSettingsUI();
+        settingsModal.classList.add("active");
       }
+
+      if (openSettingsBtnHome) openSettingsBtnHome.addEventListener("click", openSettings);
+      if (openSettingsBtnLists) openSettingsBtnLists.addEventListener("click", openSettings);
 
       if (settingsCloseBtn) {
         settingsCloseBtn.addEventListener("click", () => {
@@ -1049,14 +1550,21 @@ function bindUI() {
         });
       }
 
-      // Toggle ändern -> speichern + sofort neu rendern (Popup bleibt offen)
-      if (doneBottomToggle) {
-        doneBottomToggle.addEventListener("change", () => {
-          setCompletedBehavior(doneBottomToggle.checked ? "bottom" : "none");
-          renderItems(); // ✅ sofort umsortieren, wenn "bottom"
-          // settingsModal bleibt offen
+      const themeToggle = document.getElementById("theme-toggle");
+      if (themeToggle) {
+        themeToggle.addEventListener("change", () => {
+          setTheme(themeToggle.checked ? "dark" : "light");
         });
       }
+
+      // ===== AI Modal: nur Outside-Click schließt (keine Buttons) =====
+      const aiModal = document.getElementById("ai-modal");
+      if (aiModal) {
+        aiModal.addEventListener("click", (e) => {
+          if (e.target === aiModal) closeAiModal();
+        });
+      }
+
 } // <- NUR DIESE EINE KLAMMER schließt bindUI()
 
     // Popups
@@ -1160,35 +1668,85 @@ function bindUI() {
     }
 
     // Benutzer laden
-    function loadUsers() {
+    
+    // Benutzer (= Profile) laden
+    async function loadUsers() {
       const select = document.getElementById('user-select');
+      if (!select) return;
+
+      // Route -> Auswahl (wenn direkt /packliste/<profile>/<list> geöffnet wurde)
+      const r = getRouteParts();
+      if (r.userId && profilesMeta?.some(p => p.id === r.userId)) {
+        currentUserId = r.userId;
+      }
+
+      // Meta ggf. nachladen (falls init offline war, später aber online)
+      if (!profilesMeta || profilesMeta.length === 0) {
+        try {
+          const metaRes = await refreshProfilesAndMaybeSelect();
+          if (metaRes.unauth) {
+            location.href = "/login?returnTo=" + encodeURIComponent(location.pathname + location.search);
+            return;
+          }
+        } catch (_) {}
+      }
+
       select.innerHTML = '';
-      // Route -> State (falls direkt /packliste/<user>/<list> geöffnet wurde)
-      applyRouteToState();
-      if (data.users.length === 0) {
-        const opt = document.createElement('option');
-        opt.value = '';
-        opt.textContent = '— keinen Benutzer —';
-        select.appendChild(opt);
-        select.disabled = true;
-        document.getElementById('lists-section').classList.add('hidden');
-        document.getElementById('list-edit-section').classList.add('hidden');
-        currentUserId = null;
+
+      if (!profilesMeta || profilesMeta.length === 0) {
+        // Offline-Fallback: lokale "users" anzeigen
+        const localUsers = (data && Array.isArray(data.users)) ? data.users : [];
+        if (localUsers.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = '— kein Profil —';
+          select.appendChild(opt);
+          select.disabled = true;
+          document.getElementById('lists-section').classList.add('hidden');
+          document.getElementById('list-edit-section').classList.add('hidden');
+          currentUserId = null;
+          return;
+        }
+        select.disabled = false;
+        localUsers.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u.id;
+          opt.textContent = u.name;
+          select.appendChild(opt);
+        });
+        if (!currentUserId || !localUsers.some(u => u.id === currentUserId)) currentUserId = localUsers[0].id;
+        select.value = currentUserId;
+        loadLists();
         return;
       }
+
+      // Online: Profiles Meta rendern
       select.disabled = false;
-      data.users.forEach(u => {
+      profilesMeta.forEach(p => {
         const opt = document.createElement('option');
-        opt.value = u.id;
-        opt.textContent = u.name;
+        opt.value = p.id;
+        opt.textContent = p.name;
         select.appendChild(opt);
       });
-      if (!currentUserId || !data.users.some(u => u.id === currentUserId)) {
-        currentUserId = data.users[0].id;
+
+      if (!currentUserId || !profilesMeta.some(p => p.id === currentUserId)) {
+        currentUserId = profilesMeta[0].id;
+        currentListId = null;
       }
       select.value = currentUserId;
+
+      // aktuelles Profil laden (damit Listen/Items stimmen)
+      try {
+        const profRes = await loadCurrentProfileData();
+        if (profRes.unauth) {
+          location.href = "/login?returnTo=" + encodeURIComponent(location.pathname + location.search);
+          return;
+        }
+      } catch (_) {}
+
       loadLists();
     }
+
 
     // Listen laden oder Editor anzeigen
     function loadLists() {
@@ -1314,7 +1872,10 @@ function renderItems() {
   const list = getCurrentList();
   if (!list) return;
 
-  const completedBehavior = getCompletedBehavior();
+  const s = ensureListSettings(list);
+  const completedBehavior = s.doneBottom ? "bottom" : "none";
+  const checkboxMode = !!s.checkbox;
+  document.body.classList.toggle("checkbox-mode", checkboxMode);
   const isDone = (it) => (it.progress || 0) >= (it.qty || 1);
 
   // Items normalisieren
@@ -1373,7 +1934,28 @@ function renderItems() {
       nameSpan.textContent = item.name;
       li.appendChild(nameSpan);
 
-      const qtyText = document.createElement("span");
+      if (editMode) {
+        const rename = document.createElement("button");
+        rename.className = "icon-btn";
+        rename.type = "button";
+        rename.title = "Name ändern";
+        rename.textContent = "🖌️";
+        rename.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openRenameModal(item.name, (v) => {
+            const n2 = normalizeItemName(v);
+            if (!n2) return;
+            item.name = n2;
+            saveData();
+            renderItems();
+          });
+          saveData();
+          renderItems();
+        });
+        li.appendChild(rename);
+      }
+
+const qtyText = document.createElement("span");
       qtyText.className = "qty-text";
       qtyText.textContent = (item.progress || 0) + "/" + (item.qty || 1);
       li.appendChild(qtyText);
@@ -1447,6 +2029,9 @@ function renderItems() {
     nameSpan.textContent = item.name;
     li.appendChild(nameSpan);
 
+    let sliderEl = null;
+    let qtyTextEl = null;
+
     // qty > 1 => Slider rechts
     if ((item.qty || 1) > 1) {
       const right = document.createElement("div");
@@ -1454,23 +2039,23 @@ function renderItems() {
       right.style.alignItems = "center";
       right.style.gap = "10px";
 
-      const slider = document.createElement("input");
-      slider.type = "range";
-      slider.min = 0;
-      slider.max = item.qty;
-      slider.value = item.progress;
-      slider.style.minWidth = "220px";
+      sliderEl = document.createElement("input");
+      sliderEl.type = "range";
+      sliderEl.min = 0;
+      sliderEl.max = item.qty;
+      sliderEl.value = item.progress;
+      sliderEl.style.minWidth = "220px";
 
-      const qtyText = document.createElement("span");
-      qtyText.className = "qty-text";
-      qtyText.textContent = item.progress + "/" + item.qty;
+      qtyTextEl = document.createElement("span");
+      qtyTextEl.className = "qty-text";
+      qtyTextEl.textContent = item.progress + "/" + item.qty;
 
       // Smooth live
-      slider.addEventListener("input", () => {
-        item.progress = parseInt(slider.value, 10) || 0;
+      sliderEl.addEventListener("input", () => {
+        item.progress = parseInt(sliderEl.value, 10) || 0;
         if (item.progress > (item.qty || 1)) item.progress = (item.qty || 1);
 
-        qtyText.textContent = item.progress + "/" + item.qty;
+        qtyTextEl.textContent = item.progress + "/" + item.qty;
 
         if (isDone(item)) li.classList.add("item-done");
         else li.classList.remove("item-done");
@@ -1483,22 +2068,26 @@ function renderItems() {
         saveData();
         if (completedBehavior === "bottom") renderItems();
       };
-      slider.addEventListener("change", commit);
-      slider.addEventListener("pointerup", commit);
+      sliderEl.addEventListener("change", commit);
+      sliderEl.addEventListener("pointerup", commit);
 
-      right.appendChild(slider);
-      right.appendChild(qtyText);
+      right.appendChild(sliderEl);
+      right.appendChild(qtyTextEl);
       li.appendChild(right);
 
       // Klick auf den Slider darf NICHT togglen
-      slider.addEventListener("click", (e) => e.stopPropagation());
-      slider.addEventListener("pointerdown", (e) => e.stopPropagation());
+      sliderEl.addEventListener("click", (e) => e.stopPropagation());
+      sliderEl.addEventListener("pointerdown", (e) => e.stopPropagation());
     }
 
-    // ✅ Klick auf die ganze Zeile toggelt "fertig"
-    li.addEventListener("click", () => {
+    // Checkbox / Klick-Verhalten
+    const doToggleDone = () => {
       const done = isDone(item);
       item.progress = done ? 0 : (item.qty || 1);
+
+      // Slider/Text direkt mitsynchronisieren
+      if (sliderEl) sliderEl.value = item.progress;
+      if (qtyTextEl) qtyTextEl.textContent = item.progress + "/" + (item.qty || 1);
 
       saveData();
 
@@ -1506,12 +2095,35 @@ function renderItems() {
       if (completedBehavior === "bottom") {
         renderItems();
       } else {
-        // ohne komplette Neurender: Klasse direkt
         if (isDone(item)) li.classList.add("item-done");
         else li.classList.remove("item-done");
         updateCompletion();
       }
-    });
+    };
+
+    if (checkboxMode) {
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.className = "item-check";
+      cb.checked = isDone(item);
+      cb.addEventListener("click", (e) => e.stopPropagation());
+      cb.addEventListener("change", () => {
+        // wenn checked -> fertig, sonst 0
+        item.progress = cb.checked ? (item.qty || 1) : 0;
+        if (sliderEl) sliderEl.value = item.progress;
+        if (qtyTextEl) qtyTextEl.textContent = item.progress + "/" + (item.qty || 1);
+        saveData();
+        if (completedBehavior === "bottom") renderItems();
+        else {
+          if (isDone(item)) li.classList.add("item-done");
+          else li.classList.remove("item-done");
+          updateCompletion();
+        }
+      });
+      li.insertBefore(cb, li.firstChild);
+        } else {
+      li.addEventListener("click", doToggleDone);
+    }
 
     ul.appendChild(li);
   });
@@ -1708,6 +2320,231 @@ function endDrag() {
       renderItems();
     }
 
+    
+    // ---------- KI: Text -> Vorschläge (mit Vorschau) ----------
+    function normalizeItemName(name) {
+      return String(name || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/^[\-–—•·]+\s*/, "");
+    }
+
+    function addOrMergeItem(list, name, qty) {
+      const n = normalizeItemName(name);
+      if (!n) return;
+      const q = Math.max(1, parseInt(qty || 1, 10) || 1);
+
+      // Merge: wenn Name schon existiert -> qty erhöhen
+      const existing = (list.items || []).find(it => (it.name || "").trim().toLowerCase() === n.toLowerCase());
+      if (existing) {
+        existing.qty = Math.max(1, (parseInt(existing.qty || 1, 10) || 1) + q);
+        return;
+      }
+      list.items.push({ id: makeId('item'), name: n, qty: q, progress: 0 });
+    }
+
+    function extractJsonArray(text) {
+      if (!text) return null;
+      let s = String(text).trim();
+      s = s.replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
+      const a = s.indexOf("[");
+      const b = s.lastIndexOf("]");
+      if (a === -1 || b === -1 || b <= a) return null;
+      const jsonStr = s.slice(a, b + 1);
+      try { return JSON.parse(jsonStr); } catch { return null; }
+    }
+
+    function openAiModal() {
+      const m = document.getElementById("ai-modal");
+      if (m) m.classList.add("active");
+      document.body.classList.add("modal-open");
+    }
+    function closeAiModal() {
+      const m = document.getElementById("ai-modal");
+      if (m) m.classList.remove("active");
+      document.body.classList.remove("modal-open");
+    }
+
+    function renderAiSuggestions(suggestions) {
+      const box = document.getElementById("ai-suggestions");
+      if (!box) return;
+      box.innerHTML = "";
+
+      if (!Array.isArray(suggestions) || suggestions.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "ai-empty";
+        empty.textContent = "Keine Vorschläge erkannt.";
+        box.appendChild(empty);
+        return;
+      }
+
+      for (let i = 0; i < suggestions.length; i++) {
+        const s = suggestions[i] || {};
+        const name = normalizeItemName(s.name);
+        if (!name) continue;
+
+        const row = document.createElement("div");
+        row.className = "ai-row";
+        row.dataset.name = name;
+
+        const main = document.createElement("div");
+        main.className = "ai-main";
+        let curName = name;
+
+        const titleWrap = document.createElement("div");
+        titleWrap.className = "ai-name-wrap";
+
+        const title = document.createElement("div");
+        title.className = "ai-name";
+        title.textContent = curName;
+
+        const renameBtn = document.createElement("button");
+        renameBtn.className = "icon-btn ai-rename-btn";
+        renameBtn.type = "button";
+        renameBtn.title = "Name ändern";
+        renameBtn.textContent = "🖌️";
+        renameBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openRenameModal(curName, (v) => {
+            const n2 = normalizeItemName(v);
+            if (!n2) return;
+            curName = n2;
+            input.value = curName;
+            saveData();
+            renderItems();
+          });
+          title.textContent = curName;
+          row.dataset.name = curName;
+        });
+
+        titleWrap.appendChild(title);
+        titleWrap.appendChild(renameBtn);
+
+        const reason = document.createElement("div");
+        reason.className = "ai-reason muted";
+        reason.textContent = normalizeItemName(s.reason || "Vorschlag");
+
+        main.appendChild(titleWrap);
+        main.appendChild(reason);
+
+        const ctrl = document.createElement("div");
+        ctrl.className = "ai-ctrl";
+
+        const qty = document.createElement("input");
+        qty.type = "range";
+        qty.min = "1";
+        qty.max = "30";
+        qty.value = String(Math.max(1, parseInt(s.qty || 1, 10) || 1));
+        qty.className = "ai-qty";
+
+        const qtyLabel = document.createElement("span");
+        qtyLabel.className = "ai-qty-label";
+        qtyLabel.textContent = qty.value;
+
+        qty.addEventListener("input", () => {
+          qtyLabel.textContent = qty.value;
+        });
+
+        const ok = document.createElement("button");
+        ok.className = "icon-btn ok";
+        ok.type = "button";
+        ok.title = "Hinzufügen";
+        ok.textContent = "+";
+
+        const no = document.createElement("button");
+        no.className = "icon-btn no";
+        no.type = "button";
+        no.title = "Nicht hinzufügen";
+        no.textContent = "×";
+
+        ok.addEventListener("click", () => {
+          const list = getCurrentList();
+          if (!list) return;
+          addOrMergeItem(list, curName, qty.value);
+          saveData();
+          renderItems();
+          row.remove();
+        });
+
+        no.addEventListener("click", () => {
+          row.remove();
+        });
+
+        ctrl.appendChild(qty);
+        ctrl.appendChild(qtyLabel);
+        ctrl.appendChild(ok);
+        ctrl.appendChild(no);
+
+        row.appendChild(main);
+        row.appendChild(ctrl);
+        box.appendChild(row);
+      }
+    }
+
+    async function aiPlanSuggestions() {
+      const list = getCurrentList();
+      if (!list) return;
+
+      const ta = document.getElementById("ai-item-text");
+      const btn = document.getElementById("ai-plan-btn");
+      const raw = (ta?.value || "").trim();
+      if (!raw) return;
+
+      const old = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "KI läuft...";
+
+      try {
+        const prompt =
+`Du bist eine Packlisten-Assistentin.
+Aufgabe: Erstelle Vorschläge für Packlisten-Artikel (inkl. plausibler Ergänzungen je nach Kontext).
+- Nutze den Text: Ziele (z.B. Strand), Personen (z.B. Kinder), Aktivitäten (z.B. Sand spielen).
+- Übernimm explizit genannte Dinge IMMER.
+- Ergänze sinnvolle Extras (aber nicht übertreiben; lieber 8-18 Vorschläge).
+- Mengen: wenn genannt (z.B. "3 Badehosen") -> qty=3; wenn Kinder erwähnt -> kindgerechte Mengen (z.B. 2 Kinder -> 2 Badehosen/Handtücher etc.).
+Antworte NUR als JSON-Array (ohne Markdown, ohne Erklärtext).
+Format: [{"name":"...","qty":1,"reason":"kurzer Grund"}]
+
+TEXT:
+${raw}`;
+
+        const r = await fetch("/api/ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await r.json().catch(() => null);
+        if (!r.ok || !data || data.ok !== true) {
+          alert("KI-Fehler: " + (data?.error || data?.message || r.status));
+          return;
+        }
+
+        const arr = extractJsonArray(data.text);
+        if (!Array.isArray(arr)) {
+          alert("KI-Antwort nicht verstanden.");
+          return;
+        }
+
+        const suggestions = arr
+          .map(x => ({
+            name: normalizeItemName(x?.name ?? x),
+            qty: Math.max(1, parseInt(x?.qty ?? 1, 10) || 1),
+            reason: normalizeItemName(x?.reason || "")
+          }))
+          .filter(x => x.name);
+
+        renderAiSuggestions(suggestions);
+        openAiModal();
+      } catch (e) {
+        alert("KI-Fehler: " + (e?.message || e));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = old;
+      }
+    }
+
     // Listen exportieren und importieren
     function exportList(listId) {
       const user = getCurrentUser();
@@ -1902,10 +2739,6 @@ function endDrag() {
       copyAction = action || 'share';
       const modal = document.getElementById('assign-modal');
       const titleEl = document.getElementById('assign-title');
-      const descEl = document.getElementById('assign-desc');
-      const confirmBtn = document.getElementById('assign-confirm');
-      if (titleEl) titleEl.textContent = (copyAction === 'duplicate') ? 'Ausgewählte Artikel duplizieren' : 'Ausgewählte Artikel teilen';
-      if (descEl) descEl.textContent = 'Die Artikel bleiben beim aktuellen Benutzer erhalten und werden zusätzlich in die gewählte Liste kopiert.';
       if (confirmBtn) confirmBtn.textContent = (copyAction === 'duplicate') ? 'Duplizieren' : 'Teilen';
       const userSel = document.getElementById('assign-user');
       const listSel = document.getElementById('assign-list');
@@ -1979,25 +2812,54 @@ function endDrag() {
 
   </script>
 
+
+  <!-- KI Vorschau Popup -->
+  <div id="ai-modal" class="popup-overlay">
+    <div class="popup" style="max-width: 760px; width: min(760px, 92vw);">
+      <h3 style="margin:0 0 6px;">KI-Vorschläge</h3>
+<div class="ai-add" style="margin: 10px 0 6px;">
+        <textarea id="ai-item-text" rows="3" placeholder="Schreib z.B.: Ich gehe an den Strand mit 2 Kindern. Oder: Pack Zahnpasta und 3 Badehosen ein."></textarea>
+        <div class="ai-actions">
+          <button id="ai-plan-btn" class="btn btn-small btn-secondary" type="button">Vorschläge erstellen</button>
+          <button id="ai-mic-btn" class="btn btn-small btn-secondary" type="button" title="Sprechen">🎙️</button>
+          <span id="ai-mic-status" class="muted" style="display:none;">Höre zu…</span>
+</div>
+      </div>
+
+
+      <div id="ai-suggestions" class="ai-list"></div>
+
+    </div>
+  </div>
+
+
     <!-- Einstellungen Popup -->
   <div id="settings-modal" class="popup-overlay">
     <div class="popup">
-      <h3 style="margin:0 0 8px;">Einstellungen</h3>
-      <p style="margin:0 0 14px; color: var(--muted);">
-        Was soll passieren, wenn ein Eintrag fertig ist?
-      </p>
-
-      <div class="settings-row">
-        <span>Abgehakte nach unten</span>
-
-        <label class="switch" aria-label="Abgehakte nach unten">
-          <input id="done-bottom-toggle" type="checkbox">
+      <h3 style="margin:0 0 12px;">Einstellungen</h3>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div style="font-weight:800;">Darkmode</div>
+        <label class="switch" aria-label="Darkmode">
+          <input id="theme-toggle" type="checkbox">
           <span class="slider-round"></span>
         </label>
       </div>
 
-      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
-        <button id="settings-close" class="btn btn-small btn-secondary">Schließen</button>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button id="settings-close" class="btn btn-small btn-secondary" type="button">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Rename Modal (kein alert/prompt) -->
+  <div id="rename-modal" class="popup-overlay" style="display:none;">
+    <div class="popup" style="max-width:520px; width:min(520px,92vw);">
+      <h3 style="margin:0 0 8px;">Name ändern</h3>
+      <input id="rename-input" type="text" style="width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.12); background:rgba(0,0,0,0.20); color:rgba(255,255,255,0.92); outline:none;" />
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+        <button id="rename-cancel" class="btn btn-small btn-secondary" type="button">Abbrechen</button>
+        <button id="rename-save" class="btn btn-small" type="button">Speichern</button>
       </div>
     </div>
   </div>

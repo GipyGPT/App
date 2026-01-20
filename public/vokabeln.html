@@ -1,0 +1,2029 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Vokabeln – Lernen</title>
+
+  <link rel="stylesheet" href="/app.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <style>
+    :root{
+      --bg0:#05080f; --bg1:#070c16;
+      --panel:rgba(17,24,39,.72);
+      --panel2:rgba(20,28,46,.78);
+      --border:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --accent:#3ee38c;
+      --accent2:#2fce7a;
+      --blue:#3b82f6;
+      --danger:#ff4d6d;
+      --warn:#facc15;
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --radius:18px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(62,227,140,0.10), transparent 55%),
+        radial-gradient(900px 600px at 85% 20%, rgba(79,140,255,0.08), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+    }
+    .wrap{max-width:1280px;margin:0 auto;padding:16px 12px calc(16px + var(--safe-bottom));}
+    .topbar{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding: calc(10px + var(--safe-top)) 0 10px;
+      position:sticky; top:0; z-index:40;
+      background: linear-gradient(180deg, rgba(5,8,15,.92), rgba(5,8,15,.65) 60%, rgba(5,8,15,0));
+      backdrop-filter: blur(10px);
+    }
+    .title{display:flex;gap:10px;align-items:center;min-width:0;flex-wrap:wrap}
+    .title b{font-size:18px;white-space:nowrap}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .btn:hover{background:rgba(255,255,255,.09)}
+    .btn.primary{
+      border:0;
+      color:#04170c;
+      background:linear-gradient(180deg,var(--accent),var(--accent2));
+      box-shadow:0 10px 26px rgba(62,227,140,.20);
+    }
+    .btn.blue{
+      border:0;
+      background:linear-gradient(180deg, rgba(59,130,246,.95), rgba(59,130,246,.70));
+      color:rgba(255,255,255,.94);
+      box-shadow:0 10px 26px rgba(59,130,246,.18);
+    }
+    .btn.danger{border-color:rgba(255,77,109,.35); background:rgba(255,77,109,.10)}
+    .btn.small{padding:8px 10px;border-radius:12px;font-weight:900}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+
+    .select, input[type="text"], textarea{
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      outline:none;
+      width:100%;
+      font-size:16px;
+    }
+    textarea{resize:none}
+    .muted{color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns: 330px 1fr;gap:12px;align-items:start;}
+    @media (max-width: 980px){ .grid{grid-template-columns: 1fr} }
+
+    .panel{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg,var(--panel2),var(--panel));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .panelHead{
+      padding:12px;
+      border-bottom:1px solid var(--border);
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .panelBody{padding:12px}
+    .list{display:flex;flex-direction:column;gap:8px}
+    .item{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      border-radius:14px;
+      padding:10px;
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      cursor:pointer;
+    }
+    .item:hover{background:rgba(255,255,255,.07)}
+    .item.active{
+      border-color:rgba(62,227,140,.55);
+      box-shadow:0 0 0 3px rgba(62,227,140,.10) inset;
+      background:rgba(62,227,140,.08);
+    }
+    .item .left{min-width:0;display:flex; gap:10px; align-items:center;}
+    .badge{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:30px; height:30px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.20);
+      font-weight:900;
+      flex:0 0 auto;
+    }
+    .item .name{font-weight:950;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .item .meta{font-size:12px;color:var(--muted);white-space:nowrap}
+    .kebab{border:1px solid var(--border); background:rgba(0,0,0,.22); color:var(--text); border-radius:12px; padding:8px 10px; cursor:pointer; font-weight:950}
+    .kebab:hover{background:rgba(255,255,255,.07)}
+    .sep{height:1px;background:rgba(255,255,255,.10);margin:10px 0}
+
+    .pill{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:rgba(255,255,255,.86);
+      font-size:12px;
+      font-weight:900;
+    }
+    .hint{font-size:12px;color:var(--muted);line-height:1.35}
+
+    .cardRow{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      border-radius:16px;
+      overflow:hidden;
+      margin-bottom:10px;
+    }
+    .cardRowInner{
+      display:grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap:10px;
+      padding:10px;
+      align-items:start;
+    }
+    @media (max-width: 900px){ .cardRowInner{grid-template-columns: 1fr} }
+
+    /* Learn */
+    .learnTop{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border);}
+    .progress{flex:1; min-width:220px; height:12px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); overflow:hidden;}
+    .progress > div{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2))}
+    .learnStage{padding:14px; display:grid; place-items:center; min-height:56vh}
+    .swipeCard{
+      width:min(520px, 92vw);
+      min-height: 320px;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.07);
+      box-shadow:0 18px 60px rgba(0,0,0,.50);
+      padding:18px;
+      position:relative;
+      touch-action:none;
+      user-select:none;
+      overflow:hidden;
+    }
+    .swipeCard .small{font-size:12px;color:var(--muted);font-weight:900}
+    .swipeCard .front{font-size:30px; font-weight:950; line-height:1.1; margin-top:10px; word-break:break-word}
+    .swipeCard .back{margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.12); font-size:18px; color:rgba(255,255,255,.90); display:none; white-space:pre-wrap}
+    .swipeCard.reveal .back{display:block}
+    .overlay{position:absolute; inset:0; display:flex; align-items:flex-start; justify-content:flex-end; padding:14px; pointer-events:none;}
+    .tag{display:inline-flex; gap:8px; align-items:center; padding:10px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(0,0,0,.25); font-weight:950; opacity:0; transform: translateY(-6px); transition: opacity .08s linear, transform .08s linear;}
+    .tag.show{opacity:1; transform: translateY(0)}
+    .tag.bad{border-color: rgba(255,77,109,.35); background: rgba(255,77,109,.14)}
+    .tag.mid{border-color: rgba(250,204,21,.35); background: rgba(250,204,21,.14)}
+    .tag.good{border-color: rgba(62,227,140,.35); background: rgba(62,227,140,.14)}
+    .learnBottom{padding:12px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:wrap;}
+    .ghostBtn{border:1px solid var(--border); background:rgba(0,0,0,.25); color:var(--text); padding:10px 12px; border-radius:14px; cursor:pointer; font-weight:950;}
+    .ghostBtn:hover{background:rgba(255,255,255,.07)}
+    .kbd{font-size:12px;color:var(--muted);font-weight:900}
+
+    /* Chat */
+    .chat{height:62vh; overflow:auto; padding:12px; display:flex; flex-direction:column; gap:10px;}
+    .bubble{max-width: 86%; padding:10px 12px; border-radius: 16px; border:1px solid var(--border); white-space:pre-wrap; line-height:1.35;}
+    .me{align-self:flex-end;background:rgba(59,130,246,.18)}
+    .ai{align-self:flex-start;background:rgba(255,255,255,.06)}
+    .chatBar{display:flex; gap:10px; padding:12px; border-top:1px solid var(--border)}
+    .chatBar textarea{flex:1; min-height:48px; max-height:160px}
+    .chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    .chipBtn{border:1px solid var(--border); background:rgba(255,255,255,.06); color:var(--text); padding:8px 10px; border-radius:999px; cursor:pointer; font-weight:950; font-size:12px;}
+    .chipBtn:hover{background:rgba(255,255,255,.09)}
+    .chipBtn.active{border-color:rgba(62,227,140,.55); background:rgba(62,227,140,.10)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:var(--muted)}
+
+    /* Popups */
+    .popupShade{position:fixed; inset:0; background:rgba(0,0,0,.58); display:none; align-items:center; justify-content:center; z-index:9999; padding:16px 12px;}
+    .popupShade.show{display:flex}
+    .popup{width:min(960px, 100%); border:1px solid var(--border); background:linear-gradient(180deg,var(--panel2),var(--panel)); border-radius:20px; box-shadow:var(--shadow); overflow:hidden;}
+    .popupHead{padding:12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .popupTitle{font-weight:950}
+    .popupBody{padding:12px}
+    .popupFoot{padding:12px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap;}
+    .xbtn{width:40px;height:40px;border-radius:14px; border:1px solid var(--border); background:rgba(0,0,0,.22); color:var(--text); cursor:pointer; font-weight:950;}
+    .xbtn:hover{background:rgba(255,255,255,.07)}
+    .twoCols{display:grid;grid-template-columns: 1fr 1fr;gap:10px;}
+    @media (max-width: 860px){ .twoCols{grid-template-columns: 1fr} }
+    .fieldLabel{font-size:12px;font-weight:950;color:var(--muted);margin-bottom:6px;}
+    .smallHint{font-size:12px;color:var(--muted);line-height:1.35}
+    .spinner{width:18px;height:18px;border-radius:999px; border:2px solid rgba(255,255,255,.25); border-top-color: rgba(255,255,255,.88); animation: spin .75s linear infinite; display:inline-block; vertical-align:-4px; margin-right:8px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Import Wizard */
+    .wizGrid{display:grid;grid-template-columns: 1fr 1.1fr; gap:12px; align-items:start;}
+    @media (max-width: 980px){ .wizGrid{grid-template-columns:1fr} }
+    .wizBox{border:1px solid var(--border); background:rgba(0,0,0,.22); border-radius:16px; padding:12px;}
+    .wizTitle{font-weight:950;margin-bottom:8px}
+    .wizRow{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .chk{display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); cursor:pointer; user-select:none}
+    .chk input{accent-color:var(--accent)}
+    .rad{display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); cursor:pointer; user-select:none}
+    .rad input{accent-color:var(--accent)}
+    .previewList{display:flex; flex-direction:column; gap:8px; max-height: 52vh; overflow:auto; padding-right:6px;}
+    .pvItem{border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); border-radius:14px; padding:10px;}
+    .pvItem b{font-weight:950}
+    .pvMiniCard{border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); border-radius:16px; padding:12px; margin-bottom:10px;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <button class="btn" id="btnBack">← Lernen</button>
+        <b>🧠 Vokabeln</b>
+        <span class="pill" id="pillProfile">Profil: …</span>
+        <span class="pill" id="pillSaved">geladen</span>
+      </div>
+      <div class="row">
+        <button class="btn" id="btnSave">Speichern</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="panelHead">
+          <div style="font-weight:950">Ordner</div>
+          <button class="btn small primary" id="btnNewFolder">+ Ordner</button>
+        </div>
+        <div class="panelBody">
+          <div class="list" id="folderList"></div>
+          <div class="sep"></div>
+
+          <div class="panelHead" style="padding:0 0 10px;border:0">
+            <div style="font-weight:950">Lernsets</div>
+            <button class="btn small primary" id="btnNewSet">+ Set</button>
+          </div>
+          <div class="muted" id="setHint" style="margin-bottom:10px"></div>
+          <div class="list" id="setList"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panelHead">
+          <div style="min-width:0">
+            <div style="font-weight:950" id="detailTitle">Wähle ein Lernset</div>
+            <div class="muted" id="detailSub">Ordner → Lernset → Bearbeiten oder Lernen</div>
+          </div>
+          <div class="row" id="detailActions" style="display:none">
+            <button class="btn small" id="btnSetMenu">⋯</button>
+            <button class="btn small blue" id="btnAIImport">KI-Import</button>
+            <button class="btn small" id="btnLearnCards">Karteikarten</button>
+            <button class="btn small" id="btnLearnHard">KI-Karteikarten</button>
+            <button class="btn small" id="btnLearnAI">KI-Lernen</button>
+          </div>
+        </div>
+        <div class="panelBody" id="detailBody">
+          <div class="muted">Erstelle zuerst einen Ordner und ein Lernset.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Learn Modal -->
+  <div class="popupShade" id="learnModalShade" aria-hidden="true">
+    <div class="popup">
+      <div class="popupHead">
+        <div class="popupTitle" id="learnTitle">Lernen</div>
+        <button class="xbtn" id="learnClose" title="Schließen">✕</button>
+      </div>
+
+      <div id="learnCardsUI" style="display:none">
+        <div class="learnTop">
+          <div class="row" style="gap:12px">
+            <span class="pill" id="learnModePill">Karteikarten</span>
+            <span class="pill" id="learnCountPill">0/0</span>
+            <span class="pill" id="learnQueuePill">Queue: 0</span>
+          </div>
+          <div class="progress"><div id="learnProg"></div></div>
+        </div>
+
+        <div class="learnStage">
+          <div class="swipeCard" id="swipeCard">
+            <div class="overlay"><div class="tag" id="tagEl"></div></div>
+            <div class="small">Tippe zum Umdrehen • Swipe: ← / ↑ / →</div>
+            <div class="front" id="cardFront">…</div>
+            <div class="back" id="cardBack">…</div>
+            <div style="position:absolute;left:14px;bottom:14px" class="mono" id="cardMeta"></div>
+          </div>
+        </div>
+
+        <div class="learnBottom">
+          <div class="row">
+            <button class="ghostBtn" id="btnSwipeLeft">← nicht</button>
+            <button class="ghostBtn" id="btnSwipeUp">↑ halb</button>
+            <button class="ghostBtn" id="btnSwipeRight">→ kann</button>
+            <button class="ghostBtn" id="btnReveal">👁️ zeigen</button>
+          </div>
+          <div class="kbd">Tasten: ← ↑ → • Leertaste: zeigen</div>
+        </div>
+      </div>
+
+      <div id="learnAIUI" style="display:none">
+        <div class="popupBody">
+          <div class="muted" id="aiIntro">KI-Lernen: Themen auswählen, dann abfragen.</div>
+          <div class="chips" id="topicChips"></div>
+        </div>
+        <div class="chat" id="chat"></div>
+        <div class="chatBar">
+          <textarea id="chatInput" placeholder="Antwort tippen (Enter = senden, Shift+Enter = neue Zeile)"></textarea>
+          <button class="btn primary" id="chatSend">Senden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generic Popup -->
+  <div class="popupShade" id="popupShade" aria-hidden="true">
+    <div class="popup" role="dialog" aria-modal="true">
+      <div class="popupHead">
+        <div class="popupTitle" id="popupTitle">Popup</div>
+        <button class="xbtn" id="popupX" title="Schließen">✕</button>
+      </div>
+      <div class="popupBody" id="popupBody"></div>
+      <div class="popupFoot" id="popupFoot"></div>
+    </div>
+  </div>
+
+  <!-- OCR/PDF/DOCX -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.7.2/mammoth.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
+
+<script>
+(() => {
+  async function enforceAuth(){
+    try{
+      const r = await fetch("/api/me", { credentials:"include" });
+      if(r.status === 401) location.href = "/login?returnTo=" + encodeURIComponent(location.pathname + location.search);
+    }catch(_){}
+  }
+  enforceAuth();
+
+  const $ = (s)=>document.querySelector(s);
+  const $$ = (s)=>Array.from(document.querySelectorAll(s));
+  const uid = ()=> (crypto.randomUUID ? crypto.randomUUID() : ("id_"+Date.now()+"_"+Math.random().toString(16).slice(2)));
+  const nowISO = ()=> new Date().toISOString();
+  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+  const deepClone = (o)=> JSON.parse(JSON.stringify(o));
+  const shuffle = (arr)=>{ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
+
+  function escapeHtml(s){ return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+
+  function toast(text){
+    const pill = $("#pillSaved");
+    const old = pill.textContent;
+    pill.textContent = text;
+    pill.style.color = "rgba(255,255,255,.86)";
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=>{ pill.textContent = old; pill.style.color = ""; }, 1400);
+  }
+
+  // ---- Popup System ----
+  const popupShade = $("#popupShade");
+  const popupTitle = $("#popupTitle");
+  const popupBody  = $("#popupBody");
+  const popupFoot  = $("#popupFoot");
+  const popupX     = $("#popupX");
+  let popupResolve = null;
+
+  function closePopup(){
+    popupShade.classList.remove("show");
+    popupShade.setAttribute("aria-hidden","true");
+    popupBody.innerHTML = "";
+    popupFoot.innerHTML = "";
+    popupResolve = null;
+  }
+  popupX.addEventListener("click", ()=> { if(popupResolve) popupResolve(null); closePopup(); });
+  popupShade.addEventListener("click", (e)=>{ if(e.target===popupShade){ if(popupResolve) popupResolve(null); closePopup(); } });
+
+  function openPopup({ title, bodyHTML, buttons }){
+    popupTitle.textContent = title || "Popup";
+    popupBody.innerHTML = bodyHTML || "";
+    popupFoot.innerHTML = "";
+    (buttons||[]).forEach(btn=>{
+      const b = document.createElement("button");
+      b.className = "btn" + (btn.primary ? " primary" : "") + (btn.danger ? " danger" : "") + (btn.blue ? " blue" : "") + (btn.small ? " small" : "");
+      b.textContent = btn.label || "OK";
+      b.addEventListener("click", ()=>{
+        const val = btn.onClick ? btn.onClick() : true;
+        if(popupResolve) popupResolve(val);
+        closePopup();
+      });
+      popupFoot.appendChild(b);
+    });
+    popupShade.classList.add("show");
+    popupShade.setAttribute("aria-hidden","false");
+  }
+
+  function popupInfo(title, text){
+    return new Promise(resolve=>{
+      popupResolve = resolve;
+      openPopup({
+        title,
+        bodyHTML: `<div class="smallHint">${escapeHtml(text).replace(/\n/g,"<br>")}</div>`,
+        buttons:[{ label:"OK", primary:true, onClick: ()=> true }]
+      });
+    });
+  }
+
+  function popupConfirm(title, text, { ok="OK", cancel="Abbrechen", danger=false } = {}){
+    return new Promise(resolve=>{
+      popupResolve = resolve;
+      openPopup({
+        title,
+        bodyHTML: `<div class="smallHint">${escapeHtml(text).replace(/\n/g,"<br>")}</div>`,
+        buttons:[
+          { label: cancel, onClick: ()=> false },
+          { label: ok, danger, primary: !danger, onClick: ()=> true }
+        ]
+      });
+    });
+  }
+
+  function popupPrompt(title, fields, { ok="OK", cancel="Abbrechen", wide=false } = {}){
+    return new Promise(resolve=>{
+      popupResolve = resolve;
+      const idPrefix = "f_" + uid().replaceAll("-","");
+      const htmlFields = (fields||[]).map((f, i)=>{
+        const fid = idPrefix + "_" + i;
+        const type = f.type || "text";
+        const val = f.value ?? "";
+        const ph = f.placeholder ?? "";
+        const rows = f.rows || 4;
+        let inputHTML = "";
+        if(type === "textarea"){
+          inputHTML = `<textarea id="${fid}" rows="${rows}" placeholder="${escapeAttr(ph)}">${escapeHtml(val)}</textarea>`;
+        } else if(type === "select"){
+          const opts = (f.options||[]).map(o=>`<option value="${escapeAttr(o.value)}"${o.value===val?" selected":""}>${escapeHtml(o.label)}</option>`).join("");
+          inputHTML = `<select id="${fid}" class="select">${opts}</select>`;
+        } else if(type === "file"){
+          inputHTML = `<input id="${fid}" type="file" ${f.accept ? `accept="${escapeAttr(f.accept)}"`:""} ${f.multiple ? "multiple":""} />`;
+        } else {
+          inputHTML = `<input id="${fid}" type="${escapeAttr(type)}" value="${escapeAttr(val)}" placeholder="${escapeAttr(ph)}" />`;
+        }
+        return `<div><div class="fieldLabel">${escapeHtml(f.label||"")}</div>${inputHTML}</div>`;
+      }).join("");
+
+      openPopup({
+        title,
+        bodyHTML: `<div class="${wide ? "" : "twoCols"}">${htmlFields}</div>`,
+        buttons:[
+          { label: cancel, onClick: ()=> null },
+          { label: ok, primary:true, onClick: ()=>{
+            const out = {};
+            (fields||[]).forEach((f,i)=>{
+              const fid = idPrefix + "_" + i;
+              const el = $("#"+fid);
+              if(!el) return;
+              if(f.type==="file") out[f.key] = el.files;
+              else out[f.key] = el.value;
+            });
+            return out;
+          } }
+        ]
+      });
+    });
+  }
+
+  function popupBusy(title, text){
+    popupTitle.textContent = title || "Bitte warten…";
+    popupBody.innerHTML = `<div class="smallHint"><span class="spinner"></span>${escapeHtml(text||"")}</div>`;
+    popupFoot.innerHTML = "";
+    popupShade.classList.add("show");
+    popupShade.setAttribute("aria-hidden","false");
+  }
+
+  // ---- API ----
+  const profileId = localStorage.getItem("learn_profileId") || "u_default";
+  $("#pillProfile").textContent = "Profil: " + profileId;
+
+  async function apiGet(path){
+    const r = await fetch(path, { credentials:"include", cache:"no-store" });
+    const txt = await r.text();
+    let data = null;
+    try{ data = txt ? JSON.parse(txt) : null; }catch(_){ data = { raw: txt }; }
+    if(!r.ok) throw Object.assign(new Error("HTTP "+r.status), { status:r.status, data });
+    return data;
+  }
+  async function apiPut(path, body){
+    const r = await fetch(path, {
+      method:"PUT",
+      headers:{ "content-type":"application/json" },
+      body: JSON.stringify(body),
+      credentials:"include"
+    });
+    const txt = await r.text();
+    let data = null;
+    try{ data = txt ? JSON.parse(txt) : null; }catch(_){ data = { raw: txt }; }
+    if(!r.ok) throw Object.assign(new Error("HTTP "+r.status), { status:r.status, data });
+    return data;
+  }
+  async function apiAskAI(prompt){
+    const r = await fetch("/api/ai", {
+      method:"POST",
+      headers:{ "content-type":"application/json" },
+      credentials:"include",
+      body: JSON.stringify({ prompt })
+    });
+    const t = await r.text();
+    let j = null;
+    try{ j = t ? JSON.parse(t) : null; }catch(_){}
+    if(!r.ok) throw new Error(j?.error || ("HTTP_"+r.status));
+    return j?.text || "";
+  }
+
+  // ---- Data (local + cloud) ----
+  const LS_KEY = "vocab_app_data_" + profileId;
+  let data = null;
+  let dirty = false;
+  let activeFolderId = null;
+  let activeSetId = null;
+
+  function setDirty(v){
+    dirty = !!v;
+    $("#pillSaved").textContent = dirty ? "ungespeichert" : "gespeichert";
+    $("#pillSaved").style.color = dirty ? "var(--warn)" : "";
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  }
+
+  function ensureDefaults(obj){
+    if(!obj || typeof obj!=="object") obj = {};
+    if(!obj.version) obj.version = 1;
+    if(!obj.updatedAt) obj.updatedAt = nowISO();
+    if(!obj.vocab || typeof obj.vocab!=="object"){
+      obj.vocab = { folders:[], sets:[], stats:{ perCard:{} }, lastFolderId:null, lastSetId:null };
+    }
+    const v = obj.vocab;
+    if(!Array.isArray(v.folders)) v.folders = [];
+    if(!Array.isArray(v.sets)) v.sets = [];
+    if(!v.stats || typeof v.stats!=="object") v.stats = { perCard:{} };
+    if(!v.stats.perCard || typeof v.stats.perCard !== "object") v.stats.perCard = {};
+
+    if(v.folders.length===0){
+      v.folders.push({ id: uid(), name:"Standard", color:"#3ee38c", icon:"📁", createdAt: nowISO() });
+    }
+    for(const s of v.sets){
+      if(!s.id) s.id = uid();
+      if(!s.folderId) s.folderId = v.folders[0].id;
+      if(!s.name) s.name = "Neues Set";
+      if(!Array.isArray(s.cards)) s.cards = [];
+      for(const c of s.cards){
+        if(!c.id) c.id = uid();
+        if(c.active === undefined) c.active = true;
+      }
+      if(!s.createdAt) s.createdAt = nowISO();
+      if(!s.updatedAt) s.updatedAt = nowISO();
+      if(!s.langA) s.langA = "Englisch";
+      if(!s.langB) s.langB = "Deutsch";
+      if(!s.desc) s.desc = "";
+    }
+    if(!v.lastFolderId || !v.folders.some(f=>f.id===v.lastFolderId)){
+      v.lastFolderId = v.folders[0].id;
+    }
+    const setsInFolder = v.sets.filter(s=>s.folderId===v.lastFolderId);
+    if(!v.lastSetId || !v.sets.some(s=>s.id===v.lastSetId)){
+      v.lastSetId = setsInFolder[0]?.id || v.sets[0]?.id || null;
+    }
+    return obj;
+  }
+
+  const vocab = ()=>data.vocab;
+  const folders = ()=>vocab().folders;
+  const sets = ()=>vocab().sets;
+  const stats = ()=>vocab().stats;
+  const currentFolder = ()=> folders().find(f=>f.id===activeFolderId) || folders()[0];
+  const currentSet = ()=> sets().find(s=>s.id===activeSetId) || null;
+
+  function getCardStat(cardId){
+    const per = stats().perCard;
+    if(!per[cardId]) per[cardId] = { l:0, u:0, r:0, lastSeen:null, streak:0, lastResult:null };
+    return per[cardId];
+  }
+  function hardnessScore(st){
+    const l = st?.l||0, u = st?.u||0, r = st?.r||0;
+    return (l*3 + u*2) - (r*1.2);
+  }
+
+  async function load(){
+    try{
+      const local = localStorage.getItem(LS_KEY);
+      if(local) data = ensureDefaults(JSON.parse(local));
+    }catch(_){}
+
+    try{
+      const res = await apiGet(`/api/learn/data?profileId=${encodeURIComponent(profileId)}`);
+      const obj = res?.data || res?.json || res;
+      data = ensureDefaults(obj && typeof obj==="object" ? obj : (data || {}));
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      dirty = false;
+      $("#pillSaved").textContent = "geladen";
+    }catch(_){
+      if(!data) data = ensureDefaults({});
+      $("#pillSaved").textContent = "lokal";
+      $("#pillSaved").style.color = "var(--warn)";
+    }
+
+    activeFolderId = vocab().lastFolderId;
+    const s = sets().find(x=>x.id===vocab().lastSetId && x.folderId===activeFolderId)
+      || sets().find(x=>x.folderId===activeFolderId)
+      || null;
+    activeSetId = s?.id || null;
+    renderAll();
+  }
+
+  async function save(){
+    if(!dirty){ toast("nichts"); return; }
+    try{
+      data.updatedAt = nowISO();
+      const body = Object.assign({}, data, { profileId });
+      await apiPut(`/api/learn/data?profileId=${encodeURIComponent(profileId)}`, body);
+      dirty = false;
+      $("#pillSaved").textContent = "gespeichert";
+      $("#pillSaved").style.color = "";
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      toast("ok");
+    }catch(_){
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      toast("lokal");
+      await popupInfo("Hinweis", "Cloud-Speichern ging nicht. Daten sind lokal gespeichert.");
+    }
+  }
+
+  // ---- Render ----
+  const folderList = $("#folderList");
+  const setList = $("#setList");
+
+  function countSetsInFolder(folderId){ return sets().filter(s=>s.folderId===folderId).length; }
+
+  function renderFolders(){
+    folderList.innerHTML = "";
+    if(!activeFolderId || !folders().some(f=>f.id===activeFolderId)){
+      activeFolderId = vocab().lastFolderId || folders()[0].id;
+    }
+    vocab().lastFolderId = activeFolderId;
+
+    for(const f of folders()){
+      const div = document.createElement("div");
+      div.className = "item" + (f.id===activeFolderId ? " active" : "");
+      div.innerHTML = `
+        <div class="left">
+          <div class="badge" style="background:${(f.color||"#3ee38c")+"22"}; border-color:${(f.color||"#3ee38c")+"55"}">${escapeHtml(f.icon||"📁")}</div>
+          <div style="min-width:0">
+            <div class="name">${escapeHtml(f.name||"Ordner")}</div>
+            <div class="meta">${countSetsInFolder(f.id)} Set(s)</div>
+          </div>
+        </div>
+        <button class="kebab" title="Ordner">⋯</button>
+      `;
+      div.addEventListener("click",(ev)=>{
+        if(ev.target && ev.target.classList.contains("kebab")) return;
+        activeFolderId = f.id;
+        vocab().lastFolderId = activeFolderId;
+        const s = sets().find(x=>x.folderId===activeFolderId) || null;
+        activeSetId = s?.id || null;
+        vocab().lastSetId = activeSetId;
+        renderAll();
+      });
+      div.querySelector(".kebab").addEventListener("click", ()=> folderMenu(f.id));
+      folderList.appendChild(div);
+    }
+  }
+
+  function renderSets(){
+    setList.innerHTML = "";
+    const list = sets().filter(s=>s.folderId===activeFolderId);
+    $("#setHint").textContent = list.length ? "" : "Noch kein Lernset in diesem Ordner.";
+
+    if(!activeSetId || !list.some(s=>s.id===activeSetId)){
+      activeSetId = (vocab().lastSetId && list.some(s=>s.id===vocab().lastSetId))
+        ? vocab().lastSetId
+        : (list[0]?.id || null);
+    }
+    vocab().lastSetId = activeSetId;
+
+    for(const s of list){
+      const cTotal = (s.cards||[]).length;
+      const cActive = (s.cards||[]).filter(c=>c.active!==false && (c.front||c.back)).length;
+      const div = document.createElement("div");
+      div.className = "item" + (s.id===activeSetId ? " active" : "");
+      div.innerHTML = `
+        <div class="left">
+          <div class="badge">🗂️</div>
+          <div style="min-width:0">
+            <div class="name">${escapeHtml(s.name||"Set")}</div>
+            <div class="meta">${cActive}/${cTotal} Karten</div>
+          </div>
+        </div>
+        <button class="kebab" title="Set">⋯</button>
+      `;
+      div.addEventListener("click",(ev)=>{
+        if(ev.target && ev.target.classList.contains("kebab")) return;
+        activeSetId = s.id;
+        vocab().lastSetId = activeSetId;
+        renderDetail();
+        renderSets();
+      });
+      div.querySelector(".kebab").addEventListener("click", ()=> setMenu(s.id));
+      setList.appendChild(div);
+    }
+  }
+
+  function renderDetail(){
+    const s = currentSet();
+    const actions = $("#detailActions");
+    const body = $("#detailBody");
+    if(!s){
+      $("#detailTitle").textContent = "Wähle ein Lernset";
+      $("#detailSub").textContent = "Ordner → Lernset → Bearbeiten oder Lernen";
+      actions.style.display = "none";
+      body.innerHTML = `<div class="muted">Erstelle zuerst einen Ordner und ein Lernset.</div>`;
+      return;
+    }
+
+    actions.style.display = "flex";
+    $("#detailTitle").textContent = s.name || "Lernset";
+    $("#detailSub").textContent = `${currentFolder().icon||"📁"} ${currentFolder().name} • ${(s.cards||[]).length} Karten`;
+
+    const cards = Array.isArray(s.cards) ? s.cards : [];
+    const activeCount = cards.filter(c=>c.active!==false && (c.front||c.back)).length;
+
+    body.innerHTML = `
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:8px">
+          <span class="pill">Aktiv: <b>${activeCount}</b></span>
+          <span class="pill">Gesamt: <b>${cards.length}</b></span>
+          <span class="pill">A: <b>${escapeHtml(s.langA||"A")}</b> → B: <b>${escapeHtml(s.langB||"B")}</b></span>
+        </div>
+        <div class="row">
+          <button class="btn small" id="btnEditMeta">✎ Set-Infos</button>
+          <button class="btn small" id="btnAddCard">+ Karte</button>
+          <button class="btn small" id="btnBulk">⤓ Einfügen</button>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="hint">
+        <b>Swipe-Modus:</b> ← kommt schnell wieder • ↑ kommt später wieder • → verschwindet (für diese Session).<br/>
+        <span class="muted">KI-Karteikarten = „schwere“ Karten zuerst.</span>
+      </div>
+
+      <div class="sep"></div>
+      <div id="cardsTable"></div>
+    `;
+
+    $("#btnEditMeta").addEventListener("click", ()=> editSetMeta(s.id));
+    $("#btnAddCard").addEventListener("click", ()=> addCard(s.id));
+    $("#btnBulk").addEventListener("click", ()=> bulkPaste(s.id));
+
+    renderCardsTable(s.id);
+  }
+
+  function renderCardsTable(setId){
+    const s = sets().find(x=>x.id===setId);
+    if(!s) return;
+    const el = $("#cardsTable");
+    const cards = s.cards || [];
+    if(cards.length===0){
+      el.innerHTML = `<div class="muted">Noch keine Karten. Klick auf <b>+ Karte</b>, <b>⤓ Einfügen</b> oder <b>KI-Import</b>.</div>`;
+      return;
+    }
+
+    el.innerHTML = cards.map((c)=>{
+      const st = getCardStat(c.id);
+      const score = hardnessScore(st);
+      const scoreLabel = score >= 8 ? "schwer" : (score >= 3 ? "mittel" : "leicht");
+      const scoreColor = score >= 8 ? "rgba(255,77,109,.18)" : (score >= 3 ? "rgba(250,204,21,.16)" : "rgba(62,227,140,.14)");
+      return `
+        <div class="cardRow">
+          <div class="cardRowInner">
+            <div>
+              <div class="muted" style="font-weight:950;margin-bottom:6px">Begriff (A)</div>
+              <input type="text" class="inFront" data-id="${c.id}" value="${escapeAttr(c.front||"")}" placeholder="z.B. house" />
+            </div>
+            <div>
+              <div class="muted" style="font-weight:950;margin-bottom:6px">Bedeutung (B)</div>
+              <input type="text" class="inBack" data-id="${c.id}" value="${escapeAttr(c.back||"")}" placeholder="z.B. Haus" />
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+              <label class="pill" style="cursor:pointer">
+                <input type="checkbox" class="inActive" data-id="${c.id}" ${c.active!==false ? "checked":""} style="margin-right:8px;accent-color:var(--accent)"/>
+                aktiv
+              </label>
+              <span class="pill" style="background:${scoreColor};border-color:rgba(255,255,255,.10)">${scoreLabel} • ←${st.l} ↑${st.u} →${st.r}</span>
+              <button class="btn small danger inDel" data-id="${c.id}">Löschen</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    el.querySelectorAll(".inFront").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id = inp.dataset.id;
+        const c = s.cards.find(x=>x.id===id);
+        c.front = inp.value;
+        s.updatedAt = nowISO();
+        setDirty(true);
+      });
+    });
+    el.querySelectorAll(".inBack").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        const id = inp.dataset.id;
+        const c = s.cards.find(x=>x.id===id);
+        c.back = inp.value;
+        s.updatedAt = nowISO();
+        setDirty(true);
+      });
+    });
+    el.querySelectorAll(".inActive").forEach(inp=>{
+      inp.addEventListener("change", ()=>{
+        const id = inp.dataset.id;
+        const c = s.cards.find(x=>x.id===id);
+        c.active = inp.checked;
+        s.updatedAt = nowISO();
+        setDirty(true);
+        renderSets(); renderDetail();
+      });
+    });
+    el.querySelectorAll(".inDel").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const id = btn.dataset.id;
+        const ok = await popupConfirm("Löschen", "Karte löschen?", { ok:"Löschen", cancel:"Abbrechen", danger:true });
+        if(!ok) return;
+        s.cards = s.cards.filter(x=>x.id!==id);
+        delete stats().perCard[id];
+        s.updatedAt = nowISO();
+        setDirty(true);
+        renderSets(); renderDetail();
+      });
+    });
+  }
+
+  function renderAll(){ renderFolders(); renderSets(); renderDetail(); }
+
+  // ---- Menüs ----
+  async function folderMenu(folderId){
+    const f = folders().find(x=>x.id===folderId);
+    if(!f) return;
+
+    const res = await popupPrompt("Ordner", [
+      { key:"action", label:"Aktion", type:"select", value:"rename", options:[
+        { value:"rename", label:"Umbenennen" },
+        { value:"color", label:"Farbe ändern" },
+        { value:"icon", label:"Icon ändern" },
+        { value:"delete", label:"Löschen" }
+      ] }
+    ], { ok:"Weiter", cancel:"Abbrechen", wide:true });
+
+    if(!res) return;
+
+    if(res.action==="rename"){
+      const r2 = await popupPrompt("Umbenennen", [
+        { key:"name", label:"Neuer Ordnername", type:"text", value: f.name || "Ordner", placeholder:"Name" }
+      ], { ok:"Speichern", cancel:"Abbrechen", wide:true });
+      if(!r2) return;
+      f.name = (r2.name||"").trim() || "Ordner";
+      setDirty(true); renderAll(); return;
+    }
+    if(res.action==="color"){
+      const r2 = await popupPrompt("Farbe", [
+        { key:"color", label:"HEX (z.B. #3ee38c)", type:"text", value: f.color || "#3ee38c", placeholder:"#RRGGBB" }
+      ], { ok:"Speichern", cancel:"Abbrechen", wide:true });
+      if(!r2) return;
+      f.color = (r2.color||"").trim() || "#3ee38c";
+      setDirty(true); renderAll(); return;
+    }
+    if(res.action==="icon"){
+      const r2 = await popupPrompt("Icon", [
+        { key:"icon", label:"Emoji", type:"text", value: f.icon || "📁", placeholder:"📁" }
+      ], { ok:"Speichern", cancel:"Abbrechen", wide:true });
+      if(!r2) return;
+      f.icon = (r2.icon||"📁").trim().slice(0,4) || "📁";
+      setDirty(true); renderAll(); return;
+    }
+    if(res.action==="delete"){
+      const hasSets = sets().some(s=>s.folderId===folderId);
+      const ok = await popupConfirm("Löschen", hasSets ? "Ordner + alle Sets wirklich löschen?" : "Ordner wirklich löschen?", { ok:"Löschen", cancel:"Abbrechen", danger:true });
+      if(!ok) return;
+      vocab().sets = sets().filter(s=>s.folderId!==folderId);
+      vocab().folders = folders().filter(x=>x.id!==folderId);
+      if(vocab().folders.length===0){
+        vocab().folders.push({ id: uid(), name:"Standard", color:"#3ee38c", icon:"📁", createdAt: nowISO() });
+      }
+      activeFolderId = vocab().folders[0].id;
+      activeSetId = sets().find(s=>s.folderId===activeFolderId)?.id || null;
+      vocab().lastFolderId = activeFolderId;
+      vocab().lastSetId = activeSetId;
+      setDirty(true);
+      renderAll();
+    }
+  }
+
+  async function setMenu(setId){
+    const s = sets().find(x=>x.id===setId);
+    if(!s) return;
+
+    const r0 = await popupPrompt("Lernset", [
+      { key:"action", label:"Aktion", type:"select", value:"rename", options:[
+        { value:"rename", label:"Umbenennen" },
+        { value:"move", label:"In anderen Ordner" },
+        { value:"duplicate", label:"Duplizieren" },
+        { value:"resetstats", label:"Stats zurücksetzen" },
+        { value:"delete", label:"Löschen" }
+      ] }
+    ], { ok:"Weiter", cancel:"Abbrechen", wide:true });
+    if(!r0) return;
+
+    if(r0.action==="rename"){
+      const r = await popupPrompt("Umbenennen", [{ key:"name", label:"Neuer Name", type:"text", value:s.name||"Set" }], { ok:"Speichern", cancel:"Abbrechen", wide:true });
+      if(!r) return;
+      s.name = (r.name||"").trim() || "Set";
+      s.updatedAt = nowISO();
+      setDirty(true);
+      renderSets(); renderDetail(); return;
+    }
+
+    if(r0.action==="move"){
+      const opts = folders().map(f=>({ value:f.id, label:(f.icon||"📁")+" "+(f.name||"Ordner") }));
+      const r = await popupPrompt("Verschieben", [{ key:"folderId", label:"Ziel-Ordner", type:"select", value:s.folderId, options:opts }], { ok:"Verschieben", cancel:"Abbrechen", wide:true });
+      if(!r) return;
+      s.folderId = r.folderId;
+      s.updatedAt = nowISO();
+      setDirty(true);
+      if(s.folderId!==activeFolderId) activeSetId = null;
+      renderAll(); return;
+    }
+
+    if(r0.action==="duplicate"){
+      const copy = deepClone(s);
+      copy.id = uid();
+      copy.name = (s.name||"Set") + " (Kopie)";
+      for(const c of (copy.cards||[])) c.id = uid();
+      copy.createdAt = nowISO();
+      copy.updatedAt = nowISO();
+      vocab().sets.unshift(copy);
+      setDirty(true);
+      renderAll(); return;
+    }
+
+    if(r0.action==="resetstats"){
+      const ok = await popupConfirm("Stats", "Alle Swipe-Stats für dieses Set zurücksetzen?", { ok:"Zurücksetzen", cancel:"Abbrechen", danger:true });
+      if(!ok) return;
+      for(const c of (s.cards||[])) delete stats().perCard[c.id];
+      setDirty(true);
+      renderDetail(); return;
+    }
+
+    if(r0.action==="delete"){
+      const ok = await popupConfirm("Löschen", "Set wirklich löschen?", { ok:"Löschen", cancel:"Abbrechen", danger:true });
+      if(!ok) return;
+      for(const c of (s.cards||[])) delete stats().perCard[c.id];
+      vocab().sets = sets().filter(x=>x.id!==setId);
+      if(activeSetId===setId) activeSetId = null;
+      setDirty(true);
+      renderAll(); return;
+    }
+  }
+
+  // ---- Edit/Add/Bulk ----
+  async function editSetMeta(setId){
+    const s = sets().find(x=>x.id===setId);
+    if(!s) return;
+    const r = await popupPrompt("Set-Infos", [
+      { key:"name", label:"Name", type:"text", value:s.name||"Lernset" },
+      { key:"langA", label:"Sprache/Seite A (Begriff)", type:"text", value:s.langA||"Englisch" },
+      { key:"langB", label:"Sprache/Seite B (Bedeutung)", type:"text", value:s.langB||"Deutsch" },
+      { key:"desc", label:"Beschreibung (optional)", type:"textarea", value:s.desc||"", rows:6 }
+    ], { ok:"Speichern", cancel:"Abbrechen", wide:true });
+    if(!r) return;
+    s.name = (r.name||"").trim() || "Lernset";
+    s.langA = (r.langA||"").trim() || "A";
+    s.langB = (r.langB||"").trim() || "B";
+    s.desc = (r.desc||"").trim();
+    s.updatedAt = nowISO();
+    setDirty(true);
+    renderSets(); renderDetail();
+  }
+
+  function addCard(setId){
+    const s = sets().find(x=>x.id===setId);
+    if(!s) return;
+    s.cards.unshift({ id: uid(), front:"", back:"", active:true, createdAt: nowISO() });
+    s.updatedAt = nowISO();
+    setDirty(true);
+    renderSets(); renderDetail();
+  }
+
+  async function bulkPaste(setId){
+    const s = sets().find(x=>x.id===setId);
+    if(!s) return;
+    const r = await popupPrompt("Bulk einfügen", [
+      { key:"txt", label:"Je Zeile: Begriff[TAB]Bedeutung oder Begriff;Bedeutung", type:"textarea", value:"", rows:12, placeholder:"house\tHaus\ncar\tAuto" }
+    ], { ok:"Einfügen", cancel:"Abbrechen", wide:true });
+    if(!r) return;
+
+    const lines = String(r.txt||"").split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    let added = 0;
+    for(const ln of lines){
+      const parts = ln.includes("\t") ? ln.split("\t") : ln.split(";");
+      const front = (parts[0]||"").trim();
+      const back  = (parts.slice(1).join(parts.includes("\t") ? "\t" : ";")||"").trim();
+      if(!front && !back) continue;
+      s.cards.push({ id: uid(), front, back, active:true, createdAt: nowISO() });
+      added++;
+    }
+    if(added){
+      s.updatedAt = nowISO();
+      setDirty(true);
+      renderSets(); renderDetail();
+      await popupInfo("Fertig", added + " Karte(n) hinzugefügt.");
+    }
+  }
+
+  // ---- Learn Modal (Swipe) ----
+  const learnShade = $("#learnModalShade");
+  const learnClose = $("#learnClose");
+  learnClose.addEventListener("click", ()=> closeLearnModal());
+  learnShade.addEventListener("click", (e)=>{ if(e.target===learnShade) closeLearnModal(); });
+
+  function openLearnModal(){ learnShade.classList.add("show"); learnShade.setAttribute("aria-hidden","false"); }
+  function closeLearnModal(){ stopSession(); learnShade.classList.remove("show"); learnShade.setAttribute("aria-hidden","true"); }
+
+  let session = null;
+  let dragging = null;
+
+  function stopSession(){
+    session = null;
+    dragging = null;
+    $("#learnCardsUI").style.display = "none";
+    $("#learnAIUI").style.display = "none";
+    $("#chat").innerHTML = "";
+    $("#topicChips").innerHTML = "";
+    $("#chatInput").value = "";
+    window.removeEventListener("keydown", keyHandler);
+  }
+
+  $("#btnLearnCards").addEventListener("click", ()=> startLearnSession("cards"));
+  $("#btnLearnHard").addEventListener("click", ()=> startLearnSession("hard"));
+  $("#btnLearnAI").addEventListener("click", ()=> startLearnSession("ai"));
+
+  function renderLearnHUD(){
+    const mastered = session.mastered.size;
+    const total = session.uniqueTotal;
+    const donePct = total ? Math.round((mastered/total)*100) : 0;
+    $("#learnCountPill").textContent = mastered + "/" + total;
+    $("#learnQueuePill").textContent = "Queue: " + session.queue.length;
+    $("#learnProg").style.width = donePct + "%";
+  }
+
+  function resetCardTransform(){
+    const el = $("#swipeCard");
+    el.style.transition = "transform .16s ease";
+    el.style.transform = "translate(0px, 0px) rotate(0deg)";
+    setTimeout(()=>{ el.style.transition=""; }, 180);
+  }
+
+  function showTag(kind, text){
+    const tag = $("#tagEl");
+    tag.className = "tag " + (kind==="good"?"good":kind==="mid"?"mid":"bad") + " show";
+    tag.textContent = text;
+    clearTimeout(showTag._t);
+    showTag._t = setTimeout(()=> tag.classList.remove("show"), 420);
+  }
+
+  function animateOut(dir, cb){
+    const el = $("#swipeCard");
+    const w = el.offsetWidth;
+    el.style.transition = "transform .20s ease";
+    if(dir==="left")  el.style.transform = `translate(${-w*1.2}px, 0px) rotate(-10deg)`;
+    if(dir==="right") el.style.transform = `translate(${w*1.2}px, 0px) rotate(10deg)`;
+    if(dir==="up")    el.style.transform = `translate(0px, ${-w*0.9}px) rotate(0deg)`;
+    setTimeout(()=>{ el.style.transition=""; cb && cb(); }, 210);
+  }
+
+  function toggleReveal(){
+    if(!session) return;
+    session.reveal = !session.reveal;
+    $("#swipeCard").classList.toggle("reveal", session.reveal);
+  }
+
+  function keyHandler(e){
+    if(!session) return;
+    if(e.key === "ArrowLeft"){ e.preventDefault(); applySwipe("left"); }
+    if(e.key === "ArrowUp"){ e.preventDefault(); applySwipe("up"); }
+    if(e.key === "ArrowRight"){ e.preventDefault(); applySwipe("right"); }
+    if(e.key === " "){ e.preventDefault(); toggleReveal(); }
+    if(e.key === "Escape"){ e.preventDefault(); closeLearnModal(); }
+  }
+
+  function enableDrag(el){
+    el.onpointerdown = (e)=>{
+      if(!session) return;
+      el.setPointerCapture(e.pointerId);
+      dragging = { id: e.pointerId, sx: e.clientX, sy: e.clientY, dx:0, dy:0, moved:false };
+    };
+    el.onpointermove = (e)=>{
+      if(!dragging || dragging.id !== e.pointerId) return;
+      const dx = e.clientX - dragging.sx;
+      const dy = e.clientY - dragging.sy;
+      dragging.dx = dx; dragging.dy = dy;
+      dragging.moved = dragging.moved || (Math.abs(dx)+Math.abs(dy) > 6);
+
+      const rot = clamp(dx/28, -12, 12);
+      el.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+
+      const adx = Math.abs(dx), ady = Math.abs(dy);
+      if(dx > 60 && adx > ady + 20) showTag("good","→ kann");
+      else if(dx < -60 && adx > ady + 20) showTag("bad","← nicht");
+      else if(dy < -60 && ady > adx + 20) showTag("mid","↑ halb");
+    };
+    el.onpointerup = ()=>{
+      if(!dragging) return;
+      const dx = dragging.dx, dy = dragging.dy;
+      dragging = null;
+
+      const adx = Math.abs(dx), ady = Math.abs(dy);
+      if(dx > 90 && adx > ady + 20){ applySwipe("right"); return; }
+      if(dx < -90 && adx > ady + 20){ applySwipe("left"); return; }
+      if(dy < -90 && ady > adx + 20){ applySwipe("up"); return; }
+      resetCardTransform();
+    };
+    el.onpointercancel = ()=> { dragging=null; resetCardTransform(); };
+  }
+
+  async function startLearnSession(mode){
+    const s = currentSet();
+    if(!s) return;
+    const cardsAll = (s.cards||[]).filter(c=>c.active!==false && (String(c.front||"").trim() || String(c.back||"").trim()));
+    if(cardsAll.length===0){ await popupInfo("Hinweis","Keine aktiven Karten."); return; }
+
+    if(mode === "ai"){
+      openLearnModal();
+      $("#learnTitle").textContent = "KI-Lernen – " + (s.name||"Set");
+      $("#learnCardsUI").style.display = "none";
+      $("#learnAIUI").style.display = "block";
+      startKILernen(s, cardsAll).catch(e=>addChat("KI-Fehler: "+(e?.message||"Fehler"),"ai"));
+      return;
+    }
+
+    const r = await popupPrompt("Karteikarten", [
+      { key:"count", label:"Wie viele Karten? (leer = alle)", type:"text", value:"", placeholder:"z.B. 30" }
+    ], { ok:"Start", cancel:"Abbrechen", wide:true });
+    if(!r) return;
+
+    let chosen = cardsAll.slice();
+    const pick = String(r.count||"").trim();
+    if(pick){
+      const n = Number(pick);
+      if(Number.isFinite(n) && n>0){
+        chosen = shuffle(chosen).slice(0, Math.min(n, chosen.length));
+      }
+    }
+
+    let queueCards = chosen.slice();
+    if(mode === "hard"){
+      const sorted = chosen.slice().sort((a,b)=> (hardnessScore(getCardStat(b.id)) - hardnessScore(getCardStat(a.id))));
+      const hardN = Math.max(6, Math.min(sorted.length, Math.round(sorted.length*0.6)));
+      queueCards = sorted.slice(0, hardN);
+      const rest = sorted.slice(hardN);
+      while(queueCards.length < Math.min(chosen.length, hardN + 12) && rest.length){
+        queueCards.push(rest.shift());
+      }
+    }
+
+    openLearnModal();
+    $("#learnTitle").textContent = (mode==="hard" ? "KI-Karteikarten – " : "Karteikarten – ") + (s.name||"Set");
+    $("#learnCardsUI").style.display = "block";
+    $("#learnAIUI").style.display = "none";
+    $("#learnModePill").textContent = (mode==="hard") ? "KI-Karteikarten" : "Karteikarten";
+
+    const total = queueCards.length;
+    session = {
+      mode,
+      setId: s.id,
+      uniqueTotal: total,
+      mastered: new Set(),
+      queue: queueCards.map(c=>c.id),
+      currentId: null,
+      reveal: false,
+      counts: { left:0, up:0, right:0 },
+      startAt: Date.now(),
+      delayFast: clamp(Math.round(total * 0.25), 2, 16),
+      delayMid:  clamp(Math.round(total * 0.65), 6, 36),
+    };
+
+    $("#btnSwipeLeft").onclick  = ()=> applySwipe("left");
+    $("#btnSwipeUp").onclick    = ()=> applySwipe("up");
+    $("#btnSwipeRight").onclick = ()=> applySwipe("right");
+    $("#btnReveal").onclick     = ()=> toggleReveal();
+
+    const cardEl = $("#swipeCard");
+    cardEl.onclick = ()=> { if(dragging && dragging.moved) return; toggleReveal(); };
+    enableDrag(cardEl);
+
+    window.addEventListener("keydown", keyHandler);
+    nextCard();
+  }
+
+  async function finishSessionPopup(){
+    const sec = Math.round((Date.now() - session.startAt)/1000);
+    const txt =
+      `Fertig ✅\n\n`+
+      `Zeit: ${sec}s\n`+
+      `← nicht: ${session.counts.left}\n`+
+      `↑ halb: ${session.counts.up}\n`+
+      `→ kann: ${session.counts.right}\n\n`+
+      `Tipp: Klick auf „Speichern“, damit es in der Cloud ist.`;
+    await popupInfo("Session fertig", txt);
+    closeLearnModal();
+  }
+
+  function nextCard(){
+    if(!session) return;
+    while(session.queue.length && session.mastered.has(session.queue[0])) session.queue.shift();
+    if(session.queue.length===0){ finishSessionPopup(); return; }
+
+    session.currentId = session.queue[0];
+    session.reveal = false;
+    $("#swipeCard").classList.remove("reveal");
+
+    const s = currentSet();
+    const card = (s.cards||[]).find(c=>c.id===session.currentId);
+    $("#cardFront").textContent = card?.front || "";
+    $("#cardBack").textContent  = card?.back  || "";
+    const st = getCardStat(session.currentId);
+    $("#cardMeta").textContent  = `←${st.l} ↑${st.u} →${st.r}`;
+
+    renderLearnHUD();
+    resetCardTransform();
+  }
+
+  function applySwipe(dir){
+    if(!session) return;
+    const cid = session.currentId;
+    if(!cid) return;
+
+    if(session.queue[0]===cid) session.queue.shift();
+    else session.queue = session.queue.filter(x=>x!==cid);
+
+    const st = getCardStat(cid);
+    st.lastSeen = nowISO();
+    st.lastResult = dir;
+
+    if(dir==="left"){ st.l++; st.streak = 0; session.counts.left++; }
+    if(dir==="up"){ st.u++; st.streak = 0; session.counts.up++; }
+    if(dir==="right"){ st.r++; st.streak = (st.streak||0)+1; session.counts.right++; }
+
+    setDirty(true);
+
+    if(dir==="right"){
+      session.mastered.add(cid);
+      showTag("good","→ kann");
+      animateOut("right", ()=> nextCard());
+      return;
+    }
+    if(dir==="up"){
+      const pos = Math.min(session.queue.length, session.delayMid);
+      session.queue.splice(pos, 0, cid);
+      showTag("mid","↑ halb");
+      animateOut("up", ()=> nextCard());
+      return;
+    }
+    const pos = Math.min(session.queue.length, session.delayFast);
+    session.queue.splice(pos, 0, cid);
+    showTag("bad","← nicht");
+    animateOut("left", ()=> nextCard());
+  }
+
+  // ---- KI Lernen ----
+  let aiState = null;
+
+  function addChat(text, who){
+    const chat = $("#chat");
+    const d = document.createElement("div");
+    d.className = "bubble " + (who==="me" ? "me" : "ai");
+    d.textContent = text;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function parseTopics(out){
+    const s = String(out||"").trim();
+    if(!s) return [];
+    try{
+      const j = JSON.parse(s);
+      if(Array.isArray(j)) return j.map(x=>String(x).trim()).filter(Boolean).slice(0,10);
+    }catch(_){}
+    return s.split(/\r?\n/).map(l=>l.replace(/^[\-\*\d\.\)\s]+/,"").trim()).filter(Boolean).slice(0,10);
+  }
+
+  function setTopicsUI(topics){
+    const wrap = $("#topicChips");
+    wrap.innerHTML = "";
+    for(const t of topics){
+      const b = document.createElement("button");
+      b.className = "chipBtn";
+      b.textContent = t;
+      b.addEventListener("click", ()=>{
+        $$("#topicChips .chipBtn").forEach(x=>x.classList.remove("active"));
+        b.classList.add("active");
+        aiState.topic = t;
+        aiState.mode = inferTopicMode(t, aiState.cards);
+        addChat("Thema gewählt: " + t, "ai");
+        askNextAIQuestion();
+      });
+      wrap.appendChild(b);
+    }
+  }
+
+  function inferTopicMode(topic, cards){
+    const t = (topic||"").toLowerCase();
+    if(t.includes("definition") || t.includes("erklär") || t.includes("erklaer") || t.includes("konzept")) return "concept";
+    return (cards && cards.length) ? "vocab" : "concept";
+  }
+
+  function pickNextCardByHardness(cards){
+    const sorted = cards.slice().sort((a,b)=> hardnessScore(getCardStat(b.id)) - hardnessScore(getCardStat(a.id)));
+    for(const c of sorted){
+      if(!aiState.asked.has(c.id)){
+        aiState.asked.add(c.id);
+        return c;
+      }
+    }
+    aiState.asked.clear();
+    const c = sorted[0];
+    if(c) aiState.asked.add(c.id);
+    return c;
+  }
+
+  function normalizeAnswer(s){ return String(s||"").trim(); }
+  function splitAlternatives(ans){ return normalizeAnswer(ans).split(/[;\/\|]/).map(x=>x.trim()).filter(Boolean); }
+  function equalsStrict(user, expected){
+    return normalizeAnswer(user).toLowerCase() === normalizeAnswer(expected).toLowerCase();
+  }
+
+  async function startKILernen(setObj, cardsAll){
+    aiState = {
+      topic: null,
+      mode: null,
+      setId: setObj.id,
+      setName: setObj.name||"Set",
+      langA: setObj.langA||"A",
+      langB: setObj.langB||"B",
+      cards: cardsAll,
+      asked: new Set(),
+      awaitingAnswer: false,
+      last: null
+    };
+
+    $("#chat").innerHTML = "";
+    $("#topicChips").innerHTML = "";
+    $("#aiIntro").textContent = "Wähle ein Thema:";
+    addChat("Ich erstelle Themen…", "ai");
+
+    let topics = [];
+    try{
+      const sample = cardsAll.slice(0, 18).map(c=>`${c.front} = ${c.back}`).join("\n");
+      const prompt =
+`Gib mir 8 kurze Lern-Themen als Liste (ohne Erklärungen), passend zu diesem Stoff.
+Stoff:
+${sample}
+
+Antworte als Bullet-Liste oder JSON-Array.`;
+      const out = await apiAskAI(prompt);
+      topics = parseTopics(out);
+    }catch(_){}
+
+    if(!topics.length) topics = ["Wiederholung", "Schwierige Wörter", "Zufall", "Definitionen", "Prüfungsmodus"];
+    addChat("Wähle oben ein Thema. Dann frage ich dich ab.", "ai");
+    setTopicsUI(topics);
+
+    $("#chatSend").onclick = sendAIAnswer;
+    $("#chatInput").onkeydown = (e)=>{
+      if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendAIAnswer(); }
+    };
+  }
+
+  async function askNextAIQuestion(){
+    if(!aiState || aiState.awaitingAnswer) return;
+    if(!aiState.topic){ addChat("Wähle zuerst ein Thema.", "ai"); return; }
+
+    if(aiState.mode === "concept"){
+      aiState.last = { type:"concept", question:`Erkläre kurz: ${aiState.topic}` };
+      aiState.awaitingAnswer = true;
+      addChat(aiState.last.question, "ai");
+      return;
+    }
+
+    const c = pickNextCardByHardness(aiState.cards);
+    aiState.last = {
+      type:"vocab",
+      cardId: c?.id || null,
+      expected: c?.back || "",
+      question: `Was bedeutet „${c.front}“ (${aiState.langA}) auf ${aiState.langB}?`
+    };
+    aiState.awaitingAnswer = true;
+    addChat(aiState.last.question, "ai");
+  }
+
+  async function sendAIAnswer(){
+    const inp = $("#chatInput");
+    const t = inp.value.trim();
+    if(!t || !aiState || !aiState.awaitingAnswer) return;
+    inp.value = "";
+    addChat(t, "me");
+
+    if(aiState.last?.type === "vocab"){
+      const expected = aiState.last.expected;
+      const alts = splitAlternatives(expected);
+      const ok = alts.some(a=>equalsStrict(t, a));
+
+      if(aiState.last.cardId){
+        const st = getCardStat(aiState.last.cardId);
+        st.lastSeen = nowISO();
+        if(ok){ st.r++; st.streak=(st.streak||0)+1; st.lastResult="right"; }
+        else { st.l++; st.streak=0; st.lastResult="left"; }
+        setDirty(true);
+      }
+      addChat(ok ? "✅ Richtig." : ("❌ Nicht ganz. Richtig wäre: " + expected), "ai");
+      aiState.awaitingAnswer = false;
+      askNextAIQuestion();
+      return;
+    }
+
+    try{
+      addChat("Ich bewerte das…", "ai");
+      const prompt =
+`Du bist ein strenger Lehrer. Thema: ${aiState.topic}
+Schülerantwort:
+${t}
+
+Gib:
+1) Kurz: was stimmt (1-3 Punkte)
+2) Kurz: was fehlt/verbessern (1-3 Punkte)
+3) Eine bessere Musterantwort (max 4 Sätze)
+
+Kein unnötiger Text.`;
+      const out = await apiAskAI(prompt);
+      addChat(out || "Das weiß ich leider nicht!😩", "ai");
+    }catch(_){
+      addChat("Das weiß ich leider nicht!😩", "ai");
+    }
+    aiState.awaitingAnswer = false;
+    askNextAIQuestion();
+  }
+
+  // ---- KI Import + Wizard (BILD -> Fragen/Checkboxen -> Live Vorschau) ----
+  $("#btnAIImport").addEventListener("click", openAIImport);
+
+  async function openAIImport(){
+    const s = currentSet();
+    if(!s) return;
+
+    const r = await popupPrompt("KI-Import ins Lernset", [
+      { key:"file", label:"Datei (Bild/PDF/DOCX)", type:"file", accept:"image/*,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+      { key:"extra", label:"Extra-Hinweis (optional)", type:"textarea", rows:6, value:"", placeholder:"z.B. 'Nur Vokabeln aus dem Kasten oben' oder 'Ohne Beispiele'" }
+    ], { ok:"Weiter", cancel:"Abbrechen", wide:true });
+
+    if(!r) return;
+
+    const file = (r.file && r.file[0]) ? r.file[0] : null;
+    if(!file){ await popupInfo("Hinweis", "Bitte eine Datei auswählen."); return; }
+
+    popupBusy("Analysiere Datei…", "Text wird gelesen (OCR / PDF / Word) …");
+    try{
+      const extracted = await extractTextFromFile(file);
+      if(!extracted || extracted.trim().length < 3){
+        closePopup();
+        await popupInfo("Hinweis", "Konnte kaum Text erkennen. Versuch ein klareres Bild/PDF.");
+        return;
+      }
+
+      // für Bilder: Wizard mit KI-Optionen + Live Preview
+      const isImage = (file.type||"").toLowerCase().startsWith("image/");
+      if(isImage){
+        const ai = await aiAnalyzeForWizard(extracted, r.extra || "", s.langA, s.langB, s.name);
+        closePopup();
+        const result = await popupImportWizard(ai, extracted);
+        if(!result) return;
+
+        // Einfügen
+        const cards = result.cards || [];
+        if(!cards.length){ await popupInfo("Hinweis","Keine Karten übrig nach deinen Einstellungen."); return; }
+
+        s.name  = result.setName || s.name;
+        s.langA = result.langA || s.langA;
+        s.langB = result.langB || s.langB;
+
+        for(const c of cards){
+          s.cards.push({ id: uid(), front:c.front, back:c.back, active:true, createdAt: nowISO() });
+        }
+        s.updatedAt = nowISO();
+        setDirty(true);
+        renderSets(); renderDetail();
+        toast("importiert");
+        return;
+      }
+
+      // PDF/DOCX: bisheriger Flow (Text editierbar -> KI -> einfügen)
+      closePopup();
+      const r2 = await popupPrompt("KI-Vorschau", [
+        { key:"preview", label:"Erkannter Text (editierbar)", type:"textarea", rows:12, value: extracted.slice(0, 6500) },
+        { key:"limit", label:"Max. Karten (optional)", type:"text", value:"", placeholder:"z.B. 40" }
+      ], { ok:"KI erstellen", cancel:"Abbrechen", wide:true });
+      if(!r2) return;
+
+      popupBusy("KI erstellt Karten…", "Bitte kurz warten …");
+
+      const maxCards = Number(String(r2.limit||"").trim());
+      const maxLine = (Number.isFinite(maxCards) && maxCards>0) ? maxCards : 60;
+
+      let out = "";
+      try{
+        const prompt =
+`Erstelle Lernkarten aus dem folgenden Text.
+
+Vorgaben:
+- Format: JE ZEILE genau: Begriff<TAB>Bedeutung
+- Keine Nummerierung, keine Bullets, keine Extra-Erklärungen.
+- Maximal ${maxLine} Karten.
+- Sprache Seite A: ${String(s.langA||"A")}
+- Sprache Seite B: ${String(s.langB||"B")}
+- Extra-Hinweis: ${String(r.extra||"-")}
+
+Text:
+${String(r2.preview||"").slice(0,12000)}
+`;
+        out = await apiAskAI(prompt);
+      }catch(_){
+        closePopup();
+        await popupInfo("Fehler", "KI ist nicht erreichbar. ( /api/ai )");
+        return;
+      }
+      closePopup();
+
+      const parsed = parseCardLines(out);
+      if(!parsed.length){
+        await popupInfo("Fehler", "KI hat keine Karten im erwarteten Format geliefert.");
+        return;
+      }
+
+      const previewList = parsed.slice(0, 18).map(c=>`• ${c.front}  →  ${c.back}`).join("\n");
+      const ok = await popupConfirm(
+        "Import",
+        `Es wurden ${parsed.length} Karten erkannt.\n\nVorschau:\n${previewList}${parsed.length>18 ? "\n…":""}\n\nEinfügen?`
+      );
+      if(!ok) return;
+
+      for(const c of parsed){
+        s.cards.push({ id: uid(), front:c.front, back:c.back, active:true, createdAt: nowISO() });
+      }
+      s.updatedAt = nowISO();
+      setDirty(true);
+      renderSets(); renderDetail();
+      toast("importiert");
+
+    }catch(e){
+      closePopup();
+      await popupInfo("Fehler", "KI-Import fehlgeschlagen: " + (e?.message || "Fehler"));
+    }
+  }
+
+  // KI analysiert Text + liefert Vorschläge + Rohkarten
+  async function aiAnalyzeForWizard(extractedText, extraHint, langA, langB, setName){
+    // Fallback, falls KI nicht geht:
+    const fallback = {
+      setNameSuggestion: setName || "Neues Set",
+      langA: langA || "A",
+      langB: langB || "B",
+      type: "vocab",
+      cards: [],
+      questions: {
+        swapSuggested: false,
+        removeDuplicatesSuggested: true,
+        strictVocabSuggested: true
+      }
+    };
+
+    let out = "";
+    try{
+      const prompt =
+`Analysiere folgenden Text (aus einem Foto/OCR) und mache daraus Lernkarten.
+
+Antworte als STRICT JSON, ohne Text drumherum.
+
+Schema:
+{
+  "setNameSuggestion": "string",
+  "langA": "string",
+  "langB": "string",
+  "type": "vocab" | "qa",
+  "questions": {
+    "swapSuggested": boolean,
+    "removeDuplicatesSuggested": boolean,
+    "strictVocabSuggested": boolean
+  },
+  "cards": [{"a":"string","b":"string"}]
+}
+
+Regeln:
+- cards enthält nur sinnvolle Paare.
+- entferne offensichtliche Überschriften/Nummern/Beispiele wenn möglich.
+- max 120 cards.
+
+Extra-Hinweis: ${String(extraHint||"-")}
+
+Text:
+${String(extractedText||"").slice(0,14000)}
+`;
+      out = await apiAskAI(prompt);
+    }catch(_){
+      // ignore
+    }
+
+    let j = null;
+    try{ j = JSON.parse(String(out||"")); }catch(_){ j = null; }
+
+    if(!j || !Array.isArray(j.cards)){
+      // fallback: simple parse
+      const parsed = parseCardLines(extractedText).slice(0,120);
+      fallback.cards = parsed.map(x=>({ a:x.front, b:x.back }));
+      return fallback;
+    }
+
+    const cards = j.cards
+      .map(x=>({ a:String(x.a||"").trim(), b:String(x.b||"").trim() }))
+      .filter(x=>x.a || x.b);
+
+    return {
+      setNameSuggestion: String(j.setNameSuggestion||setName||"Neues Set").trim(),
+      langA: String(j.langA||langA||"A").trim(),
+      langB: String(j.langB||langB||"B").trim(),
+      type: (j.type==="qa" ? "qa" : "vocab"),
+      questions: {
+        swapSuggested: !!j.questions?.swapSuggested,
+        removeDuplicatesSuggested: j.questions?.removeDuplicatesSuggested !== false,
+        strictVocabSuggested: j.questions?.strictVocabSuggested !== false
+      },
+      cards
+    };
+  }
+
+  // Wizard Popup mit Checkbox-Fragen + Live Preview
+  function popupImportWizard(ai, extractedText){
+    return new Promise(resolve=>{
+      popupResolve = resolve;
+
+      const body = `
+        <div class="wizGrid">
+          <div class="wizBox">
+            <div class="wizTitle">Einstellungen (ankreuzen)</div>
+
+            <div class="fieldLabel">Set-Name</div>
+            <input id="wiz_setName" type="text" value="${escapeAttr(ai.setNameSuggestion||"Neues Set")}" />
+
+            <div style="height:10px"></div>
+
+            <div class="twoCols">
+              <div>
+                <div class="fieldLabel">Seite A</div>
+                <input id="wiz_langA" type="text" value="${escapeAttr(ai.langA||"A")}" />
+              </div>
+              <div>
+                <div class="fieldLabel">Seite B</div>
+                <input id="wiz_langB" type="text" value="${escapeAttr(ai.langB||"B")}" />
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <div class="fieldLabel">Typ</div>
+            <label class="rad"><input type="radio" name="wiz_type" value="vocab" ${ai.type!=="qa"?"checked":""}/> Vokabeln (A → B)</label>
+            <label class="rad"><input type="radio" name="wiz_type" value="qa" ${ai.type==="qa"?"checked":""}/> Frage/Antwort</label>
+
+            <div style="height:10px"></div>
+
+            <label class="chk"><input id="wiz_swap" type="checkbox" ${ai.questions?.swapSuggested ? "checked":""}/> Seiten tauschen (B → A)</label>
+            <label class="chk"><input id="wiz_dedupe" type="checkbox" ${ai.questions?.removeDuplicatesSuggested!==false ? "checked":""}/> Duplikate entfernen</label>
+            <label class="chk"><input id="wiz_clean" type="checkbox" checked/> „Sauber machen“ (Nummern/Striche/Leerzeichen)</label>
+
+            <div style="height:10px"></div>
+
+            <div class="twoCols">
+              <div>
+                <div class="fieldLabel">Max. Karten</div>
+                <input id="wiz_max" type="text" value="60" placeholder="z.B. 40" />
+              </div>
+              <div>
+                <div class="fieldLabel">Vorschau-Zeilen</div>
+                <input id="wiz_prevN" type="text" value="18" />
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+
+            <div class="fieldLabel">OCR-Text (nur Vorschau)</div>
+            <div class="wizBox" style="max-height:180px; overflow:auto; padding:10px; border-radius:14px">
+              <div class="mono">${escapeHtml(String(extractedText||"").slice(0,1200))}${String(extractedText||"").length>1200?"…":""}</div>
+            </div>
+
+            <div class="smallHint" style="margin-top:10px">
+              Rechts siehst du live, wie dein Lernset aussehen wird.
+            </div>
+          </div>
+
+          <div class="wizBox">
+            <div class="wizTitle">Vorschau</div>
+
+            <div class="pvMiniCard">
+              <div class="muted" style="font-weight:950;margin-bottom:6px">Karteikarte (Beispiel)</div>
+              <div style="font-size:22px;font-weight:950" id="pv_front">…</div>
+              <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.88)" id="pv_back">…</div>
+              <div class="mono" style="margin-top:10px" id="pv_meta">0 Karten</div>
+            </div>
+
+            <div class="previewList" id="pv_list"></div>
+          </div>
+        </div>
+      `;
+
+      openPopup({
+        title: "KI-Import (Bild) – Wizard",
+        bodyHTML: body,
+        buttons: [
+          { label:"Abbrechen", onClick: ()=> null },
+          { label:"Einfügen", primary:true, onClick: ()=>{
+            const setName = ($("#wiz_setName")?.value||"").trim() || "Neues Set";
+            const langA = ($("#wiz_langA")?.value||"").trim() || "A";
+            const langB = ($("#wiz_langB")?.value||"").trim() || "B";
+            const type = ($$('input[name="wiz_type"]:checked')[0]?.value) || "vocab";
+            const swap = !!$("#wiz_swap")?.checked;
+            const dedupe = !!$("#wiz_dedupe")?.checked;
+            const clean = !!$("#wiz_clean")?.checked;
+
+            const max = Number(String($("#wiz_max")?.value||"").trim());
+            const maxCards = (Number.isFinite(max) && max>0) ? Math.min(250, max) : 60;
+
+            const cards = buildWizardCards(ai.cards||[], { type, swap, dedupe, clean, maxCards });
+
+            return { setName, langA, langB, type, cards };
+          } }
+        ]
+      });
+
+      // live preview
+      const update = ()=>{
+        const type = ($$('input[name="wiz_type"]:checked')[0]?.value) || "vocab";
+        const swap = !!$("#wiz_swap")?.checked;
+        const dedupe = !!$("#wiz_dedupe")?.checked;
+        const clean = !!$("#wiz_clean")?.checked;
+
+        const max = Number(String($("#wiz_max")?.value||"").trim());
+        const maxCards = (Number.isFinite(max) && max>0) ? Math.min(250, max) : 60;
+
+        const prevN = Number(String($("#wiz_prevN")?.value||"").trim());
+        const showN = (Number.isFinite(prevN) && prevN>0) ? Math.min(60, prevN) : 18;
+
+        const cards = buildWizardCards(ai.cards||[], { type, swap, dedupe, clean, maxCards });
+        const list = $("#pv_list");
+        const meta = $("#pv_meta");
+        const pvF = $("#pv_front");
+        const pvB = $("#pv_back");
+
+        meta.textContent = `${cards.length} Karte(n)`;
+
+        const first = cards[0];
+        pvF.textContent = first ? first.front : "—";
+        pvB.textContent = first ? first.back  : "—";
+
+        list.innerHTML = cards.slice(0, showN).map((c,i)=>`
+          <div class="pvItem">
+            <div class="muted" style="font-weight:950;margin-bottom:6px">#${i+1}</div>
+            <div><b>${escapeHtml(c.front||"")}</b></div>
+            <div class="muted" style="margin:6px 0">→</div>
+            <div>${escapeHtml(c.back||"")}</div>
+          </div>
+        `).join("") + (cards.length>showN ? `<div class="muted">… +${cards.length-showN} weitere</div>` : "");
+      };
+
+      ["input","change"].forEach(evt=>{
+        popupBody.addEventListener(evt, (e)=>{
+          if(!e.target) return;
+          const id = e.target.id || "";
+          const name = e.target.name || "";
+          if(id.startsWith("wiz_") || name==="wiz_type") update();
+        });
+      });
+
+      // initial
+      update();
+    });
+  }
+
+  function normalizeLine(s){
+    let x = String(s||"");
+    x = x.replace(/\s+/g, " ").trim();
+    x = x.replace(/^[\-\*\d\.\)\s]+/,"").trim();
+    x = x.replace(/\s*[:=\-–—]\s*$/,"").trim();
+    return x;
+  }
+
+  function buildWizardCards(rawCards, opts){
+    const type = opts.type || "vocab";
+    const swap = !!opts.swap;
+    const dedupe = !!opts.dedupe;
+    const clean = !!opts.clean;
+    const maxCards = opts.maxCards || 60;
+
+    let cards = (rawCards||[]).map(x=>{
+      let a = String(x.a||"").trim();
+      let b = String(x.b||"").trim();
+      if(clean){ a = normalizeLine(a); b = normalizeLine(b); }
+      if(swap){ const t=a; a=b; b=t; }
+      return { front:a, back:b };
+    }).filter(c=> (c.front||c.back));
+
+    // bei QA: falls "Frage?" erkannt, lassen wir so; hier nur Label
+    if(type==="qa"){
+      // nichts erzwingen – gleiche Struktur bleibt
+    }
+
+    if(dedupe){
+      const seen = new Set();
+      const uniq = [];
+      for(const c of cards){
+        const k = (c.front+"||"+c.back).toLowerCase();
+        if(seen.has(k)) continue;
+        seen.add(k);
+        uniq.push(c);
+      }
+      cards = uniq;
+    }
+
+    // kill super-short junk
+    cards = cards.filter(c=>{
+      const a = (c.front||"").trim();
+      const b = (c.back||"").trim();
+      if(!a || !b) return false;
+      if(a.length<1 || b.length<1) return false;
+      if(a.length===1 && b.length===1) return false;
+      return true;
+    });
+
+    return cards.slice(0, maxCards);
+  }
+
+  function parseCardLines(txt){
+    const lines = String(txt||"").split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    const out = [];
+    for(const ln of lines){
+      let a="", b="";
+      if(ln.includes("\t")){
+        const parts = ln.split("\t");
+        a = (parts[0]||"").trim();
+        b = (parts.slice(1).join("\t")||"").trim();
+      } else if(ln.includes(" = ")){
+        const parts = ln.split(" = ");
+        a = (parts[0]||"").trim(); b = (parts.slice(1).join(" = ")||"").trim();
+      } else if(ln.includes(" - ")){
+        const parts = ln.split(" - ");
+        a = (parts[0]||"").trim(); b = (parts.slice(1).join(" - ")||"").trim();
+      } else if(ln.includes(":")){
+        const parts = ln.split(":");
+        if(parts.length>=2){
+          a = (parts[0]||"").trim(); b = (parts.slice(1).join(":")||"").trim();
+        }
+      } else continue;
+      if(!a && !b) continue;
+      out.push({ front:a, back:b });
+    }
+    const seen = new Set();
+    const unique = [];
+    for(const c of out){
+      const k = (c.front+"||"+c.back).toLowerCase();
+      if(seen.has(k)) continue;
+      seen.add(k);
+      unique.push(c);
+    }
+    return unique;
+  }
+
+  async function extractTextFromFile(file){
+    const type = (file.type||"").toLowerCase();
+    if(type.includes("pdf")) return await extractPdfText(file);
+    if(type.includes("wordprocessingml") || file.name.toLowerCase().endsWith(".docx")) return await extractDocxText(file);
+    if(type.startsWith("image/")) return await extractImageText(file);
+    return await file.text();
+  }
+
+  async function extractPdfText(file){
+    try{
+      if(pdfjsLib.GlobalWorkerOptions){
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.worker.min.js";
+      }
+    }catch(_){}
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let out = "";
+    const maxPages = Math.min(pdf.numPages, 25);
+    for(let p=1; p<=maxPages; p++){
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      const strings = content.items.map(it=>it.str).filter(Boolean);
+      out += "\n\n[Seite " + p + "]\n" + strings.join(" ");
+    }
+    return out.trim();
+  }
+
+  async function extractDocxText(file){
+    const buf = await file.arrayBuffer();
+    const res = await mammoth.extractRawText({ arrayBuffer: buf });
+    return String(res.value||"").trim();
+  }
+
+  async function extractImageText(file){
+    const { data: { text } } = await Tesseract.recognize(file, "deu+eng", { logger: ()=>{} });
+    return String(text||"").trim();
+  }
+
+  // ---- Top Buttons ----
+  $("#btnNewFolder").addEventListener("click", async ()=>{
+    const r = await popupPrompt("Neuer Ordner", [
+      { key:"name",  label:"Name", type:"text", value:"Neuer Ordner" },
+      { key:"icon",  label:"Icon (Emoji)", type:"text", value:"📁" },
+      { key:"color", label:"Farbe (HEX)", type:"text", value:"#3ee38c" },
+    ], { ok:"Erstellen", cancel:"Abbrechen", wide:true });
+    if(!r) return;
+    const f = { id: uid(), name:(r.name||"").trim()||"Ordner", icon:(r.icon||"📁").trim().slice(0,4)||"📁", color:(r.color||"#3ee38c").trim()||"#3ee38c", createdAt: nowISO() };
+    vocab().folders.unshift(f);
+    activeFolderId = f.id;
+    activeSetId = null;
+    vocab().lastFolderId = activeFolderId;
+    vocab().lastSetId = null;
+    setDirty(true);
+    renderAll();
+  });
+
+  $("#btnNewSet").addEventListener("click", async ()=>{
+    if(!activeFolderId) activeFolderId = folders()[0]?.id;
+    const r = await popupPrompt("Neues Lernset", [
+      { key:"name",  label:"Name", type:"text", value:"Neues Set" },
+      { key:"langA", label:"Sprache/Seite A", type:"text", value:"Englisch" },
+      { key:"langB", label:"Sprache/Seite B", type:"text", value:"Deutsch" },
+    ], { ok:"Erstellen", cancel:"Abbrechen", wide:true });
+    if(!r) return;
+
+    const s = {
+      id: uid(),
+      folderId: activeFolderId,
+      name: (r.name||"").trim() || "Neues Set",
+      langA: (r.langA||"").trim() || "A",
+      langB: (r.langB||"").trim() || "B",
+      desc: "",
+      cards: [],
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    };
+    vocab().sets.unshift(s);
+    activeSetId = s.id;
+    vocab().lastSetId = activeSetId;
+    setDirty(true);
+    renderAll();
+  });
+
+  $("#btnSave").addEventListener("click", save);
+  $("#btnBack").addEventListener("click", async ()=>{
+    if(dirty){
+      const ok = await popupConfirm("Zurück", "Ungespeicherte Änderungen. Trotzdem zurück?", { ok:"Zurück", cancel:"Bleiben", danger:true });
+      if(!ok) return;
+    }
+    location.href = "/lernen";
+  });
+
+  $("#btnSetMenu").addEventListener("click", ()=> { if(currentSet()) setMenu(currentSet().id); });
+
+  load();
+})();
+</script>
+</body>
+</html>
